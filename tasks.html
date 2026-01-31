@@ -315,22 +315,33 @@
         radial-gradient(circle at 22% 76%, rgba(255,255,255,.85) 0 1.8px, transparent 3px),
         radial-gradient(circle at 72% 78%, rgba(255,255,255,.9) 0 2px, transparent 3px);
     }
+
+    /* --- NEW: user emblem preview on certificate (from graphic station) --- */
+    .userEmblem{
+      width:76px;height:76px;object-fit:cover;
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.55);
+      padding:0;
+      display:none;
+    }
+    body[data-bg="night"] .userEmblem{background:rgba(255,255,255,.08)}
+
+    /* --- NEW: BEAUTIFUL STAMP (SVG) --- */
     .seal{
       position:absolute;
-      right:16px; bottom:16px;
-      width:110px; height:110px;
+      right:14px; bottom:14px;
+      width:132px; height:132px;
       border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.45), transparent 55%),
-              linear-gradient(135deg, rgba(45,124,247,.95), rgba(20,184,166,.92));
-      border:3px solid rgba(255,255,255,.55);
+      overflow:hidden;
+      background:transparent;
+      border:1px solid rgba(255,255,255,.55);
       box-shadow: 0 18px 30px rgba(0,0,0,.18);
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;
-      font-weight:1000;
-      text-align:center;
-      padding:10px;
       transform: rotate(-6deg);
+      display:flex;align-items:center;justify-content:center;
     }
+    .seal svg{width:132px;height:132px;display:block}
+
     .certFairy{
       display:flex;gap:12px;align-items:center;flex-wrap:wrap;
       margin-top:12px;
@@ -363,6 +374,63 @@
       .certWrap{display:block !important}
       .cert{box-shadow:none}
     }
+
+    /* ==========================
+       GRAPHIC STATION (NEW)
+    ========================== */
+    .artGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .artTools{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:flex-start;
+    }
+    .toolBtn{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.78);
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    body[data-bg="night"] .toolBtn{background:rgba(255,255,255,.08);color:var(--text)}
+    .toolBtn.active{
+      background:linear-gradient(90deg,#36c2ff,#2d7cf7);
+      color:#fff;border-color:transparent;
+    }
+    .artCanvas{
+      width:100%;
+      aspect-ratio: 16/10;
+      border-radius:16px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.92);
+      touch-action:none;
+      box-shadow:0 10px 20px rgba(0,0,0,.08);
+    }
+    body[data-bg="night"] .artCanvas{
+      background: rgba(255,255,255,.08);
+    }
+    .gridOn{
+      background-image:
+        repeating-linear-gradient(0deg, rgba(45,124,247,.16) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(90deg, rgba(45,124,247,.16) 0 1px, transparent 1px 26px);
+      background-size: 26px 26px;
+    }
+    .artMetaRow{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .checkLine{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      justify-content:space-between;
+    }
+    .artStatus{
+      font-weight:1000;
+      color:var(--muted);
+    }
+    .artStatus.ok{ color:#0b7a62; }
+    body[data-bg="night"] .artStatus.ok{ color:#70ffd6; }
   </style>
 </head>
 
@@ -476,6 +544,52 @@
 
         <div class="divider"></div>
 
+        <!-- ==========================
+             GRAPHIC STATION (NEW)
+        ========================== -->
+        <div class="box" id="artBox">
+          <h4 id="artTitle">Графическая станция (обязательно) — +25 баллов</h4>
+          <div class="hint" id="artLead" style="margin:6px 0 10px;text-align:left">
+            Сделай мини-плакат: <b>название вида</b> + <b>символ героя</b> + <b>3 угрозы</b> + <b>1 действие-помощь</b>.
+            Нажми <b>«Скачать PNG»</b> и сохрани рисунок. Без этого сертификат не выдаётся.
+          </div>
+
+          <div class="artMetaRow">
+            <input id="artSpecies" type="text" placeholder="Выбранный вид (например: среднеазиатская черепаха / сон-трава)" style="min-width:min(540px, 95vw)">
+            <span class="badge" id="artBadge">Статус: не выполнено</span>
+          </div>
+
+          <div class="artGrid">
+            <div class="artTools">
+              <button class="toolBtn active" id="toolBrush">Кисть</button>
+              <button class="toolBtn" id="toolEraser">Ластик</button>
+
+              <span class="badge" id="artSizeLabel">Толщина</span>
+              <input id="artSize" type="range" min="2" max="26" value="6"/>
+
+              <span class="badge" id="artColorLabel">Цвет</span>
+              <input id="artColor" type="color" value="#0f6b3a" style="width:44px;height:34px;border:none;background:transparent;cursor:pointer"/>
+
+              <button class="toolBtn" id="btnGrid">Сетка</button>
+              <button class="toolBtn" id="btnClear">Очистить</button>
+              <button class="toolBtn" id="btnSavePng">Скачать PNG</button>
+            </div>
+
+            <canvas id="artCanvas" class="artCanvas" width="1400" height="875" aria-label="Графическая станция"></canvas>
+
+            <div class="checkLine">
+              <div class="artStatus" id="artStatus">Статус: не выполнено</div>
+              <button class="btn teal" id="btnArtDone">✅ Я сохранил(а) рисунок</button>
+            </div>
+
+            <div class="hint" id="artTip" style="text-align:left">
+              Подсказка: начни с рамки и заголовка, затем герой (простые фигуры), потом 3 пиктограммы угроз (🔥🚯🏭) и одно действие (“Не мусорить”, “Не забирать домой”, “Не рвать цветы”).
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
         <div class="mini">
           <div class="box">
             <h4 id="situTitle">Мини-миссия «Ситуации» (доп. баллы)</h4>
@@ -507,6 +621,7 @@
 
         <div class="certTop">
           <img src="assets/emblem.png" alt="Эмблема" onerror="this.style.display='none'">
+          <img id="userEmblemPreview" class="userEmblem" alt="Рисунок участника">
           <div>
             <div class="certTitle" id="certTitle">Сертификат Хранителя</div>
             <div class="certSub" id="certSub">«Черепаший уголок: хранители Красной книги»</div>
@@ -531,7 +646,8 @@
           <div class="chip" id="certDate">Дата: —</div>
         </div>
 
-        <div class="seal" id="sealText">ХРАНИТЕЛЬ<br>КРАСНОЙ КНИГИ</div>
+        <!-- NEW: stamp will be SVG -->
+        <div class="seal" id="sealText"></div>
       </div>
 
       <div class="row" style="margin-top:12px">
@@ -552,6 +668,9 @@
 <script>
 const LS_LANG = "eco_lang";
 const LS_BG   = "eco_bg";
+const LS_ART_DONE = "eco_art_done";
+const LS_ART_SPEC = "eco_art_species";
+const LS_ART_THUMB = "eco_art_thumb"; // NEW: small preview for certificate
 
 const $ = (s)=>document.querySelector(s);
 const $$ = (s)=>Array.from(document.querySelectorAll(s));
@@ -605,7 +724,21 @@ const I18N = {
     fairyHello:"Фея «Черепашьего уголка» приветствует тебя, Хранитель!",
     fairyTip:"Твоя миссия: спасти Черепаху и её друзей — выполняй задания и создай свой знак хранителя.",
     certFairyLine:"Фея Краснокнижница подтверждает: миссия выполнена!",
-    certFairyLine2:"Береги природу: не забирай животных домой, не рви редкие цветы, не оставляй мусор."
+    certFairyLine2:"Береги природу: не забирай животных домой, не рви редкие цветы, не оставляй мусор.",
+    artTitle:"Графическая станция (обязательно) — +25 баллов",
+    artLead:"Сделай мини-плакат: название вида + символ героя + 3 угрозы + 1 действие-помощь. Нажми «Скачать PNG» и сохрани рисунок. Без этого сертификат не выдаётся.",
+    artPh:"Выбранный вид (например: среднеазиатская черепаха / сон-трава)",
+    artStatusBad:"Статус: не выполнено",
+    artStatusOk:"Статус: выполнено ✅",
+    artBrush:"Кисть",
+    artEraser:"Ластик",
+    artThick:"Толщина",
+    artColor:"Цвет",
+    artGrid:"Сетка",
+    artClear:"Очистить",
+    artSave:"Скачать PNG",
+    artDone:"✅ Я сохранил(а) рисунок",
+    artTip:"Подсказка: начни с рамки и заголовка, затем герой (простые фигуры), потом 3 пиктограммы угроз (🔥🚯🏭) и одно действие (“Не мусорить”, “Не забирать домой”, “Не рвать цветы”)."
   },
   kz:{
     brandTitle:"Тасбақа бұрышы",
@@ -648,7 +781,21 @@ const I18N = {
     fairyHello:"«Тасбақа бұрышының» Феясы сені қарсы алады, Сақшы!",
     fairyTip:"Миссияң: Тасбақа мен достарын қорғау — тапсырмаларды орындап, белгіңді жаса.",
     certFairyLine:"Қызыл кітап Феясы растайды: миссия орындалды!",
-    certFairyLine2:"Табиғатты сақта: жануарды үйге әкелме, сирек гүлді жұлма, қоқыс қалдырма."
+    certFairyLine2:"Табиғатты сақта: жануарды үйге әкелме, сирек гүлді жұлма, қоқыс қалдырма.",
+    artTitle:"Графикалық станция (міндетті) — +25 ұпай",
+    artLead:"Шағын плакат жаса: түр атауы + кейіпкер белгісі + 3 қауіп + 1 көмек әрекеті. «PNG жүктеу» басып сақта. Онсыз сертификат берілмейді.",
+    artPh:"Таңдалған түр (мысалы: ортаазиялық тасбақа / көктемгі гүл)",
+    artStatusBad:"Күйі: орындалмаған",
+    artStatusOk:"Күйі: орындалды ✅",
+    artBrush:"Қылқалам",
+    artEraser:"Өшіргіш",
+    artThick:"Қалыңдық",
+    artColor:"Түс",
+    artGrid:"Тор",
+    artClear:"Тазалау",
+    artSave:"PNG жүктеу",
+    artDone:"✅ Сақтадым",
+    artTip:"Кеңес: рамка мен атаудан баста, кейін кейіпкер (қарапайым фигуралар), содан соң 3 қауіп пиктограммасы (🔥🚯🏭) және 1 көмек әрекеті."
   },
   en:{
     brandTitle:"Turtle Corner",
@@ -691,7 +838,21 @@ const I18N = {
     fairyHello:"The Fairy of the Turtle Corner welcomes you, Guardian!",
     fairyTip:"Your mission: protect the Tortoise and friends—complete tasks and create your emblem.",
     certFairyLine:"The Red Book Fairy confirms: mission completed!",
-    certFairyLine2:"Protect nature: don’t take wildlife home, don’t pick rare flowers, don’t litter."
+    certFairyLine2:"Protect nature: don’t take wildlife home, don’t pick rare flowers, don’t litter.",
+    artTitle:"Graphic Station (required) — +25 points",
+    artLead:"Make a mini poster: species name + hero symbol + 3 threats + 1 helpful action. Click “Download PNG” and save it. No certificate without this.",
+    artPh:"Chosen species (e.g., Central Asian tortoise / rare flower)",
+    artStatusBad:"Status: not done",
+    artStatusOk:"Status: done ✅",
+    artBrush:"Brush",
+    artEraser:"Eraser",
+    artThick:"Thickness",
+    artColor:"Color",
+    artGrid:"Grid",
+    artClear:"Clear",
+    artSave:"Download PNG",
+    artDone:"✅ I saved the drawing",
+    artTip:"Tip: start with a frame and title, draw the hero with simple shapes, then 3 threat icons (🔥🚯🏭) and 1 helpful action."
   }
 };
 
@@ -756,6 +917,80 @@ function setStaticText(){
   $("#fairyTip").textContent   = t("fairyTip");
   $("#certFairyLine").textContent  = t("certFairyLine");
   $("#certFairyLine2").textContent = t("certFairyLine2");
+
+  // Graphic station
+  $("#artTitle").textContent = t("artTitle");
+  $("#artLead").textContent  = t("artLead");
+  $("#artSpecies").placeholder = t("artPh");
+  $("#artSizeLabel").textContent = t("artThick");
+  $("#artColorLabel").textContent = t("artColor");
+  $("#btnGrid").textContent = t("artGrid");
+  $("#btnClear").textContent = t("artClear");
+  $("#btnSavePng").textContent = t("artSave");
+  $("#btnArtDone").textContent = t("artDone");
+  $("#toolBrush").textContent = t("artBrush");
+  $("#toolEraser").textContent = t("artEraser");
+  $("#artTip").textContent = t("artTip");
+}
+
+/* ==========================
+   BEAUTIFUL STAMP (SVG)
+========================== */
+function renderStampSVG(topText, bottomText){
+  const uid = "s" + Math.random().toString(16).slice(2);
+  return `
+  <svg viewBox="0 0 200 200" aria-label="Seal">
+    <defs>
+      <radialGradient id="g${uid}" cx="30%" cy="25%" r="80%">
+        <stop offset="0%" stop-color="rgba(255,255,255,.55)"></stop>
+        <stop offset="45%" stop-color="rgba(255,255,255,.12)"></stop>
+        <stop offset="100%" stop-color="rgba(0,0,0,.22)"></stop>
+      </radialGradient>
+      <linearGradient id="b${uid}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="rgba(54,194,255,.95)"></stop>
+        <stop offset="52%" stop-color="rgba(46,231,200,.92)"></stop>
+        <stop offset="100%" stop-color="rgba(245,158,11,.92)"></stop>
+      </linearGradient>
+      <path id="topArc${uid}" d="M 30 105 A 70 70 0 0 1 170 105" />
+      <path id="botArc${uid}" d="M 170 105 A 70 70 0 0 1 30 105" />
+      <filter id="shadow${uid}" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="rgba(0,0,0,.25)"/>
+      </filter>
+    </defs>
+
+    <g filter="url(#shadow${uid})">
+      <circle cx="100" cy="100" r="92" fill="url(#b${uid})" opacity="0.92"/>
+      <circle cx="100" cy="100" r="86" fill="url(#g${uid})" opacity="0.70"/>
+      <circle cx="100" cy="100" r="78" fill="transparent" stroke="rgba(255,255,255,.70)" stroke-width="5"/>
+      <circle cx="100" cy="100" r="66" fill="transparent" stroke="rgba(255,255,255,.35)" stroke-width="3" stroke-dasharray="3 6"/>
+
+      <g fill="rgba(255,255,255,.88)" opacity=".92">
+        <circle cx="100" cy="30" r="2.4"/><circle cx="100" cy="170" r="2.4"/>
+        <circle cx="30" cy="100" r="2.4"/><circle cx="170" cy="100" r="2.4"/>
+        <circle cx="52" cy="52" r="2"/><circle cx="148" cy="52" r="2"/>
+        <circle cx="52" cy="148" r="2"/><circle cx="148" cy="148" r="2"/>
+      </g>
+
+      <text font-size="14" font-weight="900" fill="rgba(255,255,255,.96)" letter-spacing="2">
+        <textPath href="#topArc${uid}" startOffset="50%" text-anchor="middle">${topText}</textPath>
+      </text>
+      <text font-size="14" font-weight="900" fill="rgba(255,255,255,.92)" letter-spacing="2">
+        <textPath href="#botArc${uid}" startOffset="50%" text-anchor="middle">${bottomText}</textPath>
+      </text>
+
+      <g transform="translate(100 112)">
+        <circle r="28" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.78)" stroke-width="2"></circle>
+        <text x="0" y="7" text-anchor="middle" font-size="22" font-weight="1000" fill="rgba(255,255,255,.98)">🐢</text>
+      </g>
+    </g>
+  </svg>`;
+}
+
+function applyStamp(){
+  const top = (lang==="ru") ? "ХРАНИТЕЛЬ" : (lang==="kz") ? "САҚШЫ" : "GUARDIAN";
+  const bot = (lang==="ru") ? "КРАСНОЙ КНИГИ" : (lang==="kz") ? "ҚЫЗЫЛ КІТАП" : "RED BOOK";
+  const el = $("#sealText");
+  if(el) el.innerHTML = renderStampSVG(top, bot);
 }
 
 const QUIZ = {
@@ -884,6 +1119,10 @@ const LEVEL_META = {
 let chosenLevel = localStorage.getItem("eco_level") || "";
 let score = 0;
 
+// Graphic task
+let artDone = (localStorage.getItem(LS_ART_DONE) === "1");
+const ART_BONUS = 25;
+
 function renderLevel(boxId, items, levelKey){
   const box = $(boxId);
   box.innerHTML = "";
@@ -991,6 +1230,7 @@ function stopTimer(){
   if(timerId) clearInterval(timerId);
   timerId = null;
 }
+
 function resetAll(){
   stopTimer();
   started = false;
@@ -1003,6 +1243,17 @@ function resetAll(){
   $("#certWrap").style.display="none";
   $$("input[type=radio]").forEach(r=>r.checked=false);
   $("#notes").value="";
+
+  // reset art
+  artDone = false;
+  localStorage.setItem(LS_ART_DONE,"0");
+  $("#artSpecies").value = "";
+  localStorage.removeItem(LS_ART_SPEC);
+  localStorage.removeItem(LS_ART_THUMB);
+  clearArtCanvas();
+  updateArtUI();
+  setCertThumbFromStorage();
+
   toast(lang==="ru" ? "Сброс выполнен." : lang==="kz" ? "Қалпына келтірілді." : "Reset done.");
 }
 
@@ -1017,6 +1268,7 @@ function calcScore(){
       if(it.a[j] && it.a[j].ok) total += it.pts;
     });
   });
+  if(artDone) total += ART_BONUS;
   return total;
 }
 function updateScoreUI(){
@@ -1061,13 +1313,25 @@ function gradeByScore(sc){
   return {ru:"Ученик Хранителя",kz:"Сақшы шәкірті",en:"Guardian Apprentice"};
 }
 
+/* NEW: show user's drawing thumb on certificate (if stored) */
+function setCertThumbFromStorage(){
+  const prev = $("#userEmblemPreview");
+  if(!prev) return;
+  const data = localStorage.getItem(LS_ART_THUMB) || "";
+  if(data){
+    prev.src = data;
+    prev.style.display = "";
+  }else{
+    prev.style.display = "none";
+  }
+}
+
 function showCert(){
   updateScoreUI();
   const nm = ($("#studentName").value.trim() || $("#stName").textContent || "—");
   $("#certName").textContent = nm;
 
   const g = gradeByScore(score);
-  $("#sealText").innerHTML = (lang==="ru" ? "ХРАНИТЕЛЬ<br>КРАСНОЙ КНИГИ" : lang==="kz" ? "ҚЫЗЫЛ КІТАП<br>САҚШЫСЫ" : "RED BOOK<br>GUARDIAN");
 
   $("#certScore").textContent = (lang==="ru" ? "Баллы: " : lang==="kz" ? "Ұпай: " : "Score: ") + score;
   $("#certLevel").textContent = (lang==="ru" ? "Уровень: " : lang==="kz" ? "Деңгей: " : "Level: ") + (LEVEL_META[chosenLevel]?.name[lang] || "—");
@@ -1076,6 +1340,10 @@ function showCert(){
   $("#certDate").textContent  = (lang==="ru" ? "Дата: " : lang==="kz" ? "Күні: " : "Date: ") + d.toLocaleDateString();
 
   $("#certSub").textContent = t("certSub") + " • " + (g[lang]||g.ru);
+
+  // NEW: stamp + preview
+  applyStamp();
+  setCertThumbFromStorage();
 
   $("#certWrap").style.display="block";
   $("#certWrap").scrollIntoView({behavior:"smooth", block:"start"});
@@ -1088,6 +1356,9 @@ function setLang(next){
   renderAll();
   setChosenLevel(chosenLevel || "l1");
   updateScoreUI();
+  updateArtUI();
+  clearArtCanvas();  // refresh poster header text for current language
+  applyStamp();
 }
 function setBg(next){
   bg = next;
@@ -1103,6 +1374,16 @@ $("#btnStart").addEventListener("click", startTimer);
 $("#btnReset").addEventListener("click", resetAll);
 $("#btnCheck").addEventListener("click", ()=>{
   if(!chosenLevel) setChosenLevel("l1");
+
+  // REQUIRE GRAPHIC TASK
+  if(!artDone){
+    toast(lang==="ru" ? "Сначала выполни графическую станцию и отметь «Я сохранил(а) рисунок»." :
+         lang==="kz" ? "Алдымен графикалық станцияны орындап, «Сақтадым» деп белгіле." :
+         "Complete the graphic station and click “I saved the drawing” first.");
+    $("#artBox").scrollIntoView({behavior:"smooth", block:"start"});
+    return;
+  }
+
   showCert();
 });
 $("#btnPrint").addEventListener("click", ()=>window.print());
@@ -1148,6 +1429,213 @@ if("speechSynthesis" in window){
   speechSynthesis.onvoiceschanged = ()=>{};
 }
 
+/* ==========================
+   GRAPHIC STATION LOGIC
+========================== */
+const artCanvas = $("#artCanvas");
+const artCtx = artCanvas.getContext("2d");
+let artDrawing = false;
+let artTool = "brush";
+let artGridOn = false;
+
+function updateArtUI(){
+  const badge = $("#artBadge");
+  const status = $("#artStatus");
+  if(artDone){
+    badge.textContent = t("artStatusOk");
+    status.textContent = t("artStatusOk");
+    status.classList.add("ok");
+    badge.style.borderColor = "rgba(20,184,166,.55)";
+  }else{
+    badge.textContent = t("artStatusBad");
+    status.textContent = t("artStatusBad");
+    status.classList.remove("ok");
+    badge.style.borderColor = "";
+  }
+  $("#artSpecies").placeholder = t("artPh");
+}
+
+function setTool(next){
+  artTool = next;
+  $("#toolBrush").classList.toggle("active", artTool==="brush");
+  $("#toolEraser").classList.toggle("active", artTool==="eraser");
+}
+
+function clearArtCanvas(){
+  artCtx.save();
+  artCtx.setTransform(1,0,0,1,0,0);
+  artCtx.clearRect(0,0,artCanvas.width, artCanvas.height);
+
+  // paper bg
+  artCtx.fillStyle = "rgba(255,255,255,.96)";
+  artCtx.fillRect(0,0,artCanvas.width, artCanvas.height);
+
+  // header strip
+  artCtx.fillStyle = "rgba(20,184,166,.10)";
+  artCtx.fillRect(0,0,artCanvas.width, Math.floor(artCanvas.height*0.14));
+
+  artCtx.fillStyle = "rgba(16,50,74,.85)";
+  artCtx.font = "bold 44px system-ui, Arial";
+  artCtx.fillText(lang==="ru" ? "Мой мини-плакат" : lang==="kz" ? "Менің шағын плакатым" : "My mini poster", 24, 70);
+  artCtx.font = "28px system-ui, Arial";
+  artCtx.fillStyle = "rgba(78,107,125,.95)";
+  artCtx.fillText(lang==="ru" ? "Редкий вид под защитой" : lang==="kz" ? "Сирек түрді қорғау" : "Rare species protected", 24, 112);
+
+  // border
+  artCtx.strokeStyle = "rgba(45,124,247,.25)";
+  artCtx.lineWidth = 10;
+  artCtx.strokeRect(14,14,artCanvas.width-28, artCanvas.height-28);
+
+  artCtx.restore();
+}
+
+/* FIX: correct pointer mapping even when canvas is responsive */
+function getArtPos(ev){
+  const rect = artCanvas.getBoundingClientRect();
+  const clientX = (ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+  const clientY = (ev.touches && ev.touches[0]) ? ev.touches[0].clientY : ev.clientY;
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  const scaleX = artCanvas.width / rect.width;
+  const scaleY = artCanvas.height / rect.height;
+  return { x: x * scaleX, y: y * scaleY, scale: Math.min(scaleX, scaleY) };
+}
+
+function artStart(ev){
+  if(!started){
+    toast(lang==="ru" ? "Сначала нажми «Старт» и введи имя." : lang==="kz" ? "Алдымен «Бастау» басып, атыңды жаз." : "Press Start and enter your name first.");
+    return;
+  }
+  artDrawing = true;
+  const p = getArtPos(ev);
+  artCtx.beginPath();
+  artCtx.moveTo(p.x, p.y);
+  ev.preventDefault();
+}
+function artMove(ev){
+  if(!artDrawing) return;
+  const p = getArtPos(ev);
+  const size = Number($("#artSize").value);
+  const col  = $("#artColor").value;
+
+  artCtx.lineCap = "round";
+  artCtx.lineJoin = "round";
+  artCtx.lineWidth = size * p.scale;
+
+  if(artTool === "eraser"){
+    artCtx.globalCompositeOperation = "destination-out";
+    artCtx.strokeStyle = "rgba(0,0,0,1)";
+  }else{
+    artCtx.globalCompositeOperation = "source-over";
+    artCtx.strokeStyle = col;
+  }
+
+  artCtx.lineTo(p.x, p.y);
+  artCtx.stroke();
+  ev.preventDefault();
+}
+function artEnd(ev){
+  artDrawing = false;
+  try{ artCtx.closePath(); }catch(e){}
+  ev && ev.preventDefault();
+}
+
+$("#toolBrush").addEventListener("click", ()=>setTool("brush"));
+$("#toolEraser").addEventListener("click", ()=>setTool("eraser"));
+
+$("#btnGrid").addEventListener("click", ()=>{
+  artGridOn = !artGridOn;
+  $("#artCanvas").classList.toggle("gridOn", artGridOn);
+});
+
+$("#btnClear").addEventListener("click", ()=>{
+  const ok = confirm(lang==="ru" ? "Очистить рисунок?" : lang==="kz" ? "Суретті тазалау керек пе?" : "Clear the drawing?");
+  if(!ok) return;
+  clearArtCanvas();
+  toast(lang==="ru" ? "Поле очищено." : lang==="kz" ? "Тазаланды." : "Cleared.");
+});
+
+function sanitizeFileName(s){
+  return (s||"poster").trim().replace(/[^\wа-яА-ЯёЁ\- ]+/g,"").replace(/\s+/g,"_").slice(0,40) || "poster";
+}
+
+/* NEW: create small thumb for certificate (JPEG) */
+function saveThumbForCert(){
+  try{
+    const w = 220, h = 220;
+    const tmp = document.createElement("canvas");
+    tmp.width = w; tmp.height = h;
+    const c = tmp.getContext("2d");
+
+    // crop center square from poster
+    const srcW = artCanvas.width, srcH = artCanvas.height;
+    const side = Math.min(srcW, srcH);
+    const sx = Math.floor((srcW - side)/2);
+    const sy = Math.floor((srcH - side)/2);
+
+    c.fillStyle = "#ffffff";
+    c.fillRect(0,0,w,h);
+    c.drawImage(artCanvas, sx, sy, side, side, 0,0,w,h);
+
+    const data = tmp.toDataURL("image/jpeg", 0.78);
+    localStorage.setItem(LS_ART_THUMB, data);
+    setCertThumbFromStorage();
+  }catch(e){
+    // if storage fails - silently ignore
+  }
+}
+
+$("#btnSavePng").addEventListener("click", ()=>{
+  if(!started){
+    toast(lang==="ru" ? "Сначала нажми «Старт»." : lang==="kz" ? "Алдымен «Бастау»." : "Press Start first.");
+    return;
+  }
+  const sp = $("#artSpecies").value.trim();
+  localStorage.setItem(LS_ART_SPEC, sp);
+
+  const a = document.createElement("a");
+  a.href = artCanvas.toDataURL("image/png");
+  a.download = `turtle_poster_${sanitizeFileName(sp || "graphic")}.png`;
+  a.click();
+
+  toast(lang==="ru" ? "PNG сохранён(скачан). Теперь нажми «Я сохранил(а) рисунок»." :
+       lang==="kz" ? "PNG жүктелді. Енді «Сақтадым» бас." :
+       "PNG downloaded. Now click “I saved the drawing”.");
+});
+
+$("#btnArtDone").addEventListener("click", ()=>{
+  const sp = $("#artSpecies").value.trim();
+  if(sp.length < 2){
+    toast(lang==="ru" ? "Сначала впиши выбранный вид (название)." :
+         lang==="kz" ? "Алдымен түр атауын жаз." :
+         "Enter the species name first.");
+    $("#artSpecies").focus();
+    return;
+  }
+  artDone = true;
+  localStorage.setItem(LS_ART_DONE, "1");
+  localStorage.setItem(LS_ART_SPEC, sp);
+  saveThumbForCert();
+  updateArtUI();
+  updateScoreUI();
+  toast(lang==="ru" ? `Графика зачтена! +${ART_BONUS} баллов.` :
+       lang==="kz" ? `Графика қабылданды! +${ART_BONUS} ұпай.` :
+       `Graphic task accepted! +${ART_BONUS} points.`);
+});
+
+$("#artSpecies").addEventListener("input", ()=>{
+  localStorage.setItem(LS_ART_SPEC, $("#artSpecies").value);
+});
+
+// mouse/touch
+artCanvas.addEventListener("mousedown", artStart);
+artCanvas.addEventListener("mousemove", artMove);
+window.addEventListener("mouseup", artEnd);
+
+artCanvas.addEventListener("touchstart", artStart, {passive:false});
+artCanvas.addEventListener("touchmove", artMove, {passive:false});
+artCanvas.addEventListener("touchend", artEnd, {passive:false});
+
 (function init(){
   setBg(bg);
   setStaticText();
@@ -1156,6 +1644,27 @@ if("speechSynthesis" in window){
   $("#stName").textContent = "—";
   $("#stScore").textContent = "0";
   $("#stTime").textContent = "30:00";
+
+  // restore art
+  const savedSpec = localStorage.getItem(LS_ART_SPEC) || "";
+  $("#artSpecies").value = savedSpec;
+  updateArtUI();
+
+  // init canvas (HiDPI but responsive-safe)
+  const dpr = window.devicePixelRatio || 1;
+  artCanvas.width = Math.floor(1400 * dpr);
+  artCanvas.height = Math.floor(875 * dpr);
+  artCtx.setTransform(1,0,0,1,0,0);
+  clearArtCanvas();
+
+  // apply grid state
+  $("#artCanvas").classList.toggle("gridOn", artGridOn);
+
+  // stamp + thumb
+  applyStamp();
+  setCertThumbFromStorage();
+
+  updateScoreUI();
 })();
 </script>
 </body>
