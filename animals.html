@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Живые герои — Черепаший уголок</title>
+  <style>
+    :root{
+      --bg1:#dff7ee;
+      --bg2:#e9f6ff;
+      --card:#ffffffcc;
+      --stroke:rgba(0,0,0,.08);
+      --shadow: 0 18px 45px rgba(0,0,0,.12);
+      --blue:#2d7cf7;
+      --teal:#14b8a6;
+      --text:#10324a;
+      --muted:#4e6b7d;
+      --pill:#ffffffc9;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 20%, var(--bg2), transparent 60%),
+        radial-gradient(1000px 700px at 80% 10%, var(--bg1), transparent 60%),
+        linear-gradient(180deg, #f3fff9 0%, #e9fbff 100%);
+      min-height:100vh;
+    }
+
+    /* Themes (фон) */
+    body[data-bg="meadow"]{
+      --bg1:#dff7ee; --bg2:#e9f6ff;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, var(--bg2), transparent 60%),
+        radial-gradient(1000px 700px at 80% 10%, var(--bg1), transparent 60%),
+        linear-gradient(180deg, #f3fff9 0%, #e9fbff 100%);
+    }
+    body[data-bg="lake"]{
+      --bg1:#d7f3ff; --bg2:#e7fbff;
+      background:
+        radial-gradient(1100px 650px at 20% 20%, #e9fbff, transparent 60%),
+        radial-gradient(1100px 650px at 75% 15%, #d7f3ff, transparent 60%),
+        linear-gradient(180deg, #f2fbff 0%, #e7fbff 100%);
+    }
+    body[data-bg="steppe"]{
+      --bg1:#fff2d7; --bg2:#eafff2;
+      background:
+        radial-gradient(1100px 650px at 20% 20%, #fff7e6, transparent 60%),
+        radial-gradient(1100px 650px at 75% 15%, #e9fff3, transparent 60%),
+        linear-gradient(180deg, #fffaf0 0%, #eafff2 100%);
+    }
+    body[data-bg="night"]{
+      --text:#eaf7ff; --muted:#c6d8e7;
+      --card:rgba(12,22,35,.68);
+      --stroke:rgba(255,255,255,.10);
+      background:
+        radial-gradient(1200px 700px at 20% 20%, rgba(40,130,255,.20), transparent 60%),
+        radial-gradient(900px 700px at 80% 10%, rgba(20,240,190,.14), transparent 60%),
+        linear-gradient(180deg, #071625 0%, #06101b 100%);
+    }
+
+    .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+    .topbar{
+      display:flex;align-items:center;gap:14px;justify-content:space-between;
+      padding:14px 16px;border:1px solid var(--stroke);
+      border-radius:18px;background:var(--card);box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:260px}
+    .emblem{
+      width:62px;height:62px;border-radius:16px;object-fit:contain;
+      background:rgba(255,255,255,.5);border:1px solid var(--stroke);
+      padding:6px;
+    }
+    .brand h1{margin:0;font-size:16px;line-height:1.1}
+    .brand small{display:block;color:var(--muted);margin-top:2px}
+
+    .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      display:flex;gap:6px;align-items:center;
+      background:var(--pill);border:1px solid var(--stroke);
+      border-radius:999px;padding:6px 8px;
+    }
+    .btn{
+      border:1px solid var(--stroke);
+      background:#fff; color:var(--text);
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s transform,.15s opacity,.15s background;
+      user-select:none;
+    }
+    body[data-bg="night"] .btn{background:rgba(255,255,255,.10);color:var(--text)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.active{background:linear-gradient(90deg,#36c2ff,#2d7cf7); color:white; border-color:transparent}
+    .btn.bg{font-weight:800}
+    .btn.ghost{background:transparent}
+    .btn.small{padding:7px 10px;font-weight:800}
+
+    .hero{
+      margin-top:18px;
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      background:var(--card);
+      box-shadow:var(--shadow);
+      padding:22px 18px;
+      text-align:center;
+    }
+    .hero h2{margin:0 0 8px;font-size:30px}
+    .hero p{margin:0 auto;max-width:820px;color:var(--muted);line-height:1.45}
+    .hero .row{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+    /* Tabs */
+    .tabs{
+      margin-top:14px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .tabBtn{
+      min-width:170px;
+      font-weight:900;
+    }
+    .tabBtn.active{
+      background:linear-gradient(90deg,#2ee7c8,#14b8a6);
+      color:#053b3b;
+      border-color:transparent;
+    }
+
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width: 620px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--stroke);
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:0 14px 28px rgba(0,0,0,.10);
+      overflow:hidden;
+      display:flex;flex-direction:column;
+      min-height:360px;
+    }
+    .thumb{
+      height:170px;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg, rgba(45,124,247,.10), rgba(20,184,166,.06));
+      border-bottom:1px solid var(--stroke);
+      position:relative;
+    }
+    body[data-bg="night"] .thumb{
+      background:linear-gradient(180deg, rgba(45,124,247,.25), rgba(20,184,166,.12));
+    }
+    .thumb img{
+      max-height:150px;max-width:92%;
+      object-fit:contain;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.18));
+    }
+    .thumb .fallback{
+      position:absolute;inset:0;
+      display:none;align-items:center;justify-content:center;
+      color:var(--muted);font-weight:800;
+      padding:10px;text-align:center;
+    }
+
+    .content{padding:14px 14px 12px;flex:1}
+    .title{margin:0;font-size:18px}
+    .latin{margin:4px 0 8px;color:var(--muted);font-style:italic;font-size:13px}
+    .desc{margin:0;color:var(--muted);line-height:1.38;font-size:14px}
+
+    .actions{
+      display:flex;gap:8px;flex-wrap:wrap;
+      padding:12px 14px 14px;
+    }
+    .primary{
+      background:linear-gradient(90deg,#36c2ff,#2d7cf7);
+      color:#fff;border-color:transparent;
+    }
+    .teal{
+      background:linear-gradient(90deg,#2ee7c8,#14b8a6);
+      color:#053b3b;border-color:transparent;
+      font-weight:900;
+    }
+
+    .footer{
+      margin-top:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      padding:10px 0 0;
+    }
+
+    /* Modal */
+    .modalBack{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.45);
+      display:none;
+      align-items:center;justify-content:center;
+      padding:16px;
+      z-index:50;
+    }
+    .modal{
+      width:min(920px, 100%);
+      border-radius:20px;
+      border:1px solid var(--stroke);
+      background:var(--card);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    .modalHead{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      padding:14px 14px;
+      border-bottom:1px solid var(--stroke);
+    }
+    .modalHead h3{margin:0;font-size:18px}
+    .modalBody{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:14px;
+      padding:14px;
+    }
+    @media (max-width: 780px){ .modalBody{grid-template-columns:1fr} }
+    .modalImg{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      background:linear-gradient(180deg, rgba(45,124,247,.10), rgba(20,184,166,.06));
+      display:flex;align-items:center;justify-content:center;
+      min-height:240px;
+      padding:10px;
+    }
+    .modalImg img{max-width:100%;max-height:300px;object-fit:contain}
+    .box{
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,255,255,.55);
+    }
+    body[data-bg="night"] .box{background:rgba(255,255,255,.06)}
+    .box h4{margin:0 0 6px;font-size:14px}
+    .list{margin:0;padding-left:18px;color:var(--muted);line-height:1.35}
+    .k{color:var(--muted);font-size:13px;margin-top:8px}
+  </style>
+</head>
+
+<body data-bg="meadow">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <img class="emblem" src="assets/emblem.png" alt="Эмблема проекта" onerror="this.style.display='none'">
+        <div>
+          <h1 id="brandTitle">Черепаший уголок</h1>
+          <small id="brandSub">Хранители Красной книги</small>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="pill" aria-label="Язык">
+          <button class="btn small" data-lang="ru">RU</button>
+          <button class="btn small" data-lang="kz">KZ</button>
+          <button class="btn small" data-lang="en">EN</button>
+        </div>
+        <div class="pill" aria-label="Фон">
+          <button class="btn small bg" data-bg="meadow" id="bgMeadow">Луг</button>
+          <button class="btn small bg" data-bg="lake" id="bgLake">Озеро</button>
+          <button class="btn small bg" data-bg="steppe" id="bgSteppe">Степь</button>
+          <button class="btn small bg" data-bg="night" id="bgNight">Ночь</button>
+        </div>
+        <a class="btn ghost" href="index.html" id="toHome">← На главную</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h2 id="pageTitle">Живые герои Красной книги</h2>
+      <p id="pageLead">
+        Нажимай «Подробнее» — откроется карточка вида. Нажимай «Озвучить» — Фея расскажет голосом.
+        Черепаха — ядро всей истории.
+      </p>
+
+      <div class="row">
+        <button class="btn teal" id="btnSpeakAll">🔊 Озвучить вступление</button>
+        <button class="btn" id="btnStop">⏹ Стоп</button>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Переключение списков">
+        <button class="btn tabBtn active" id="tabAnimals" data-tab="animals" role="tab" aria-selected="true">🐾 Животные</button>
+        <button class="btn tabBtn" id="tabPlants" data-tab="plants" role="tab" aria-selected="false">🌿 Растения</button>
+      </div>
+    </section>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="footer" id="credits">
+      © Эко-проект «Черепаший уголок: хранители Красной книги».
+      КГУ «Общеобразовательная школа № 1» отдела образования города Балхаш управления образования Карагандинской области,
+      учащиеся 7 «Б» класса.
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHead">
+        <h3 id="modalTitle">Карточка вида</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="btn primary" id="modalSpeak">🔊 Озвучить</button>
+          <button class="btn" id="modalClose">✖ Закрыть</button>
+        </div>
+      </div>
+      <div class="modalBody">
+        <div class="modalImg">
+          <img id="modalImg" alt="">
+        </div>
+        <div style="display:grid;gap:12px">
+          <div class="box">
+            <h4 id="mAboutH">Кто это?</h4>
+            <div class="k" id="mLatin"></div>
+            <div id="mAbout"></div>
+          </div>
+          <div class="box">
+            <h4 id="mWhyH">Почему сокращается численность?</h4>
+            <ul class="list" id="mThreats"></ul>
+          </div>
+          <div class="box">
+            <h4 id="mHelpH">Как мы можем помочь?</h4>
+            <ul class="list" id="mHelp"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ====== Settings (shared across pages via localStorage) ====== */
+const LS_LANG = "eco_lang";
+const LS_BG   = "eco_bg";
+const LS_TAB  = "eco_animals_tab"; // "animals" | "plants"
+
+const $ = (s)=>document.querySelector(s);
+const $$ = (s)=>Array.from(document.querySelectorAll(s));
+
+/* ====== Text dictionary ====== */
+const I18N = {
+  ru: {
+    brandTitle:"Черепаший уголок",
+    brandSub:"Хранители Красной книги",
+    toHome:"← На главную",
+    pageTitle:"Живые герои Красной книги",
+    pageLead:"Нажимай «Подробнее» — откроется карточка вида. Нажимай «Озвучить» — Фея расскажет голосом. Черепаха — ядро всей истории.",
+    speakIntro:"🔊 Озвучить вступление",
+    stop:"⏹ Стоп",
+    more:"Подробнее",
+    speak:"Озвучить",
+    threats:"Причины",
+    help:"Защита",
+    mAboutH:"Кто это?",
+    mWhyH:"Почему сокращается численность?",
+    mHelpH:"Как мы можем помочь?",
+    tabAnimals:"🐾 Животные",
+    tabPlants:"🌿 Растения",
+    titleAnimals:"Живые герои Красной книги",
+    leadAnimals:"Нажимай «Подробнее» — откроется карточка вида. Нажимай «Озвучить» — Фея расскажет голосом. Черепаха — ядро всей истории.",
+    titlePlants:"Растения Красной книги",
+    leadPlants:"Нажимай «Подробнее» — откроется карточка растения. Нажимай «Озвучить» — Фея расскажет голосом. Берегите цветы и степь!"
+  },
+  kz: {
+    brandTitle:"Тасбақа бұрышы",
+    brandSub:"Қызыл кітап сақшылары",
+    toHome:"← Басты бетке",
+    pageTitle:"Қызыл кітаптың тірі қаһармандары",
+    pageLead:"«Толығырақ» — түр туралы карточка ашылады. «Дыбыстау» — Фея дауыспен айтып береді. Тасбақа — оқиғаның өзегі.",
+    speakIntro:"🔊 Кіріспені дыбыстау",
+    stop:"⏹ Тоқтату",
+    more:"Толығырақ",
+    speak:"Дыбыстау",
+    threats:"Себептер",
+    help:"Қорғау",
+    mAboutH:"Бұл кім?",
+    mWhyH:"Неліктен саны азайып жатыр?",
+    mHelpH:"Қалай көмектесеміз?",
+    tabAnimals:"🐾 Жануарлар",
+    tabPlants:"🌿 Өсімдіктер",
+    titleAnimals:"Қызыл кітап қаһармандары",
+    leadAnimals:"«Толығырақ» — карточка ашылады. «Дыбыстау» — Фея дауыспен айтып береді. Тасбақа — тарихтың өзегі.",
+    titlePlants:"Қызыл кітап өсімдіктері",
+    leadPlants:"«Толығырақ» — өсімдік карточкасы ашылады. «Дыбыстау» — Фея дауыстайды. Гүлдерді қорғаңдар!"
+  },
+  en: {
+    brandTitle:"Turtle Corner",
+    brandSub:"Red Book Guardians",
+    toHome:"← Home",
+    pageTitle:"Living Heroes of the Red Book",
+    pageLead:"Tap “Details” to open a species card. Tap “Speak” to hear the Fairy. The turtle is the core of the story.",
+    speakIntro:"🔊 Speak intro",
+    stop:"⏹ Stop",
+    more:"Details",
+    speak:"Speak",
+    threats:"Threats",
+    help:"Protection",
+    mAboutH:"About",
+    mWhyH:"Why is the population decreasing?",
+    mHelpH:"How can we help?",
+    tabAnimals:"🐾 Animals",
+    tabPlants:"🌿 Plants",
+    titleAnimals:"Living Heroes of the Red Book",
+    leadAnimals:"Tap “Details” to open a species card. Tap “Speak” to hear the Fairy. The turtle is the core of the story.",
+    titlePlants:"Red Book Plants",
+    leadPlants:"Tap “Details” to open a plant card. Tap “Speak” to hear the Fairy. Protect flowers and the steppe!"
+  }
+};
+
+/* ====== Animals (your 9 animals) ====== */
+const ANIMALS = [
+  {
+    id:"turtle",
+    img:"assets/animals/turtle.png",
+    latin:"Testudo horsfieldii",
+    ru:{ name:"Среднеазиатская черепаха",
+      about:"Главная героиня сказки. Живёт в степи и полупустыне. Уязвима из-за вмешательства человека.",
+      threats:["изъятие из природы (забирают домой)","пожары и выжигание травы","дороги и техника (гибель кладок)","мусор и разрушение укрытий"],
+      help:["не забирать черепах домой","не трогать кладки и норы","не жечь траву, сообщать взрослым о пожарах","делать таблички/QR-памятки, объяснять правила другим"]
+    },
+    kz:{ name:"Ортаазиялық тасбақа",
+      about:"Ертегінің басты кейіпкері. Дала мен шөлейтте тіршілік етеді, адам әсерінен осал.",
+      threats:["табиғаттан алып кету (үйге әкету)","өрт, шөпті өртеу","жолдар, техника (ұялардың жойылуы)","қоқыс, пананың бұзылуы"],
+      help:["тасбақаны үйге әкетпеу","ұя/інге тимеу","шөпті өртемеу, өрт туралы ересектерге айту","QR-жадынама жасап, ереже түсіндіру"]
+    },
+    en:{ name:"Central Asian tortoise",
+      about:"The main hero of our fairy tale. Lives in steppe and semi-deserts; vulnerable to human impact.",
+      threats:["taken from the wild as pets","grass fires","roads/vehicles (nests destroyed)","trash and habitat damage"],
+      help:["do not take tortoises home","do not disturb nests/burrows","avoid fires, report smoke","make QR-rules and educate others"]
+    }
+  },
+  {
+    id:"gull",
+    img:"assets/animals/gull.png",
+    latin:"Ichthyaetus relictus",
+    ru:{ name:"Реликтовая чайка",
+      about:"Редкая птица озёр. Нуждается в спокойных местах гнездования.",
+      threats:["беспокойство у гнёзд","мусор и хищники у колоний","изменение берегов и уровня воды","загрязнение водоёмов"],
+      help:["не подходить к колониям","убирать мусор у берегов","наблюдать издалека","рассказывать о правилах поведения на природе"]
+    },
+    kz:{ name:"Реликт шағала",
+      about:"Көл маңындағы сирек құс. Ұя салатын тыныш аймақ қажет.",
+      threats:["ұя маңында мазалау","қоқыс пен жыртқыштар","жағалаудың өзгеруі, су деңгейі","су ластануы"],
+      help:["колонияға жақындамау","жағалауда қоқыс жинау","алыстан бақылау","табиғаттағы тәртіпті түсіндіру"]
+    },
+    en:{ name:"Relict gull",
+      about:"A rare lake bird that needs calm nesting places.",
+      threats:["disturbance near nests","trash attracting predators","shoreline/water level changes","water pollution"],
+      help:["keep distance from colonies","clean shore trash","observe from afar","teach nature rules"]
+    }
+  },
+  {
+    id:"pelican",
+    img:"assets/animals/pelican.png",
+    latin:"Pelecanus crispus",
+    ru:{ name:"Кудрявый пеликан",
+      about:"Крупная птица водоёмов. Зависит от чистой воды и наличия рыбы.",
+      threats:["загрязнение воды","снижение запасов рыбы","беспокойство на местах гнездования","сетки/мусор в воде"],
+      help:["беречь водоёмы от мусора","не шуметь у воды","помогать в уборках берегов","делать плакаты и QR-памятки"]
+    },
+    kz:{ name:"Бұйра бірқазан",
+      about:"Ірі су құсы. Таза су мен балыққа тәуелді.",
+      threats:["су ластануы","балықтың азаюы","ұя салатын жерде мазалау","суға түскен тор/қоқыс"],
+      help:["қоқыс тастамау","су маңында шуламау","жағалауды тазалау","QR-жадынама жасау"]
+    },
+    en:{ name:"Dalmatian pelican",
+      about:"A large waterbird that depends on clean water and fish.",
+      threats:["water pollution","fish decline","disturbance at nesting sites","nets/trash in water"],
+      help:["keep water clean","be quiet near water","join cleanups","make posters/QR tips"]
+    }
+  },
+  {
+    id:"saiga",
+    img:"assets/animals/saiga.png",
+    latin:"Saiga tatarica",
+    ru:{ name:"Сайгак",
+      about:"Символ степей Казахстана. Очень чувствителен к браконьерству и потере миграционных путей.",
+      threats:["браконьерство","дороги и ограждения на путях миграции","пожары степи","беспокойство и шум"],
+      help:["не преследовать животных","сообщать о нарушениях взрослым","беречь степь от пожаров","делать просветительские материалы"]
+    },
+    kz:{ name:"Киік",
+      about:"Қазақстан даласының символы. Браконьерлік пен көшу жолдарының бұзылуына өте осал.",
+      threats:["браконьерлік","көшу жолындағы жол/қоршаулар","дала өрті","шу, мазалау"],
+      help:["жануарды қумау","заңбұзушылықты ересектерге айту","өрттің алдын алу","ақпараттық материал жасау"]
+    },
+    en:{ name:"Saiga antelope",
+      about:"A symbol of Kazakhstan’s steppes; highly vulnerable to poaching and migration barriers.",
+      threats:["poaching","roads/fences blocking migration","steppe fires","disturbance/noise"],
+      help:["do not chase animals","report violations to adults","prevent fires","create awareness materials"]
+    }
+  },
+  {
+    id:"jayran",
+    img:"assets/animals/jayran.png",
+    latin:"Gazella subgutturosa",
+    ru:{ name:"Джейран",
+      about:"Изящная антилопа полупустынь. Страдает от потери мест обитания и преследования.",
+      threats:["потеря мест обитания","браконьерство","дороги и техника","недостаток укрытий"],
+      help:["не шуметь и не преследовать","сохранять природные участки","информировать о правилах","участвовать в школьных эко-акциях"]
+    },
+    kz:{ name:"Жейран",
+      about:"Шөлейттің әсем антилопасы. Мекеннің бұзылуы мен қудалаудан зардап шегеді.",
+      threats:["мекеннің жойылуы","браконьерлік","жол/техника","пананың азаюы"],
+      help:["қумау, шуламау","табиғи аумақты сақтау","ереже туралы айту","мектеп эко-акцияларына қатысу"]
+    },
+    en:{ name:"Goitered gazelle",
+      about:"A graceful semi-desert antelope threatened by habitat loss and persecution.",
+      threats:["habitat loss","poaching","roads/vehicles","lack of shelter"],
+      help:["don’t chase, keep quiet","protect natural areas","share rules","join school eco actions"]
+    }
+  },
+  {
+    id:"eagle",
+    img:"assets/animals/eagle.png",
+    latin:"Aquila nipalensis",
+    ru:{ name:"Степной орёл",
+      about:"Хищная птица степей. Ему нужны безопасные места и кормовая база.",
+      threats:["пожары","опасные линии электропередачи","беспокойство у гнёзд","сокращение добычи"],
+      help:["не тревожить гнёзда","сообщать об опасных местах взрослым","соблюдать тишину на природе","делать памятки о защите птиц"]
+    },
+    kz:{ name:"Дала бүркіті",
+      about:"Дала жыртқыш құсы. Қауіпсіз орын мен қорек қажет.",
+      threats:["өрт","қауіпті электр желілері","ұя маңында мазалау","олжаның азаюы"],
+      help:["ұяға тимеу","қауіпті жерді ересектерге айту","табиғатта тыныш болу","құстарды қорғау жадынамасы"]
+    },
+    en:{ name:"Steppe eagle",
+      about:"A steppe raptor that needs safe nesting areas and prey.",
+      threats:["fires","dangerous power lines","nest disturbance","prey decline"],
+      help:["don’t disturb nests","report hazards to adults","keep quiet outdoors","create bird-protection tips"]
+    }
+  },
+  {
+    id:"manul",
+    img:"assets/animals/manul.png",
+    latin:"Otocolobus manul",
+    ru:{ name:"Манул",
+      about:"Дикий кот степей и гор. Очень осторожен, страдает от беспокойства и потери укрытий.",
+      threats:["разрушение укрытий","собаки и беспокойство","зимние пожары","снижение кормовой базы"],
+      help:["не разорять норы и каменные укрытия","соблюдать тишину","не оставлять мусор","рассказывать о правилах поведения"]
+    },
+    kz:{ name:"Манул",
+      about:"Дала мен таудың жабайы мысығы. Мазалауға және пананың жойылуына осал.",
+      threats:["пананың бұзылуы","иттер, мазалау","қысқы өрт","қоректің азаюы"],
+      help:["ін/жасырына тимеу","тыныштық сақтау","қоқыс қалдырмау","ереже түсіндіру"]
+    },
+    en:{ name:"Pallas’s cat (Manul)",
+      about:"A wild cat of steppe and mountains; sensitive to disturbance and shelter loss.",
+      threats:["shelter destruction","dogs/disturbance","fires","prey decline"],
+      help:["do not destroy shelters","keep quiet","leave no trash","teach rules"]
+    }
+  },
+  {
+    id:"corsac",
+    img:"assets/animals/corsac.png",
+    latin:"Vulpes corsac",
+    ru:{ name:"Корсак (степная лисица)",
+      about:"Житель степей. Важен для баланса экосистемы, страдает от беспокойства и разрушения среды.",
+      threats:["потеря мест обитания","пожары","беспокойство и преследование","мусор и отравления"],
+      help:["не преследовать животных","не оставлять пищевые отходы","бережно относиться к степи","делать эко-памятки"]
+    },
+    kz:{ name:"Корсак (дала түлкісі)",
+      about:"Дала жануары. Экожүйе тепе-теңдігі үшін маңызды, адам әсеріне осал.",
+      threats:["мекеннің жоғалуы","өрт","қуу/мазалау","қоқыс, улану"],
+      help:["қумау","тағам қалдығын қалдырмау","даланы қорғау","эко-жадынама жасау"]
+    },
+    en:{ name:"Corsac fox",
+      about:"A steppe fox important for ecosystem balance, vulnerable to disturbance.",
+      threats:["habitat loss","fires","persecution","trash/poisoning"],
+      help:["don’t chase wildlife","don’t leave food waste","protect the steppe","make eco tips"]
+    }
+  },
+  {
+    id:"caracal",
+    img:"assets/animals/caracal.png",
+    latin:"Caracal caracal",
+    ru:{ name:"Каракал (редкий хищник)",
+      about:"Редкий хищник южных регионов Казахстана. Добавлен как «секретный герой» сказки.",
+      threats:["потеря местообитаний","браконьерство","беспокойство","снижение кормовой базы"],
+      help:["не поддерживать незаконную охоту","сохранять природные территории","не тревожить животных","просвещать через школьные проекты"]
+    },
+    kz:{ name:"Қарақал (сирек жыртқыш)",
+      about:"Қазақстанның оңтүстігіндегі сирек жыртқыш. Ертегідегі «құпия кейіпкер».",
+      threats:["мекеннің жоғалуы","браконьерлік","мазалау","қоректің азаюы"],
+      help:["заңсыз аңшылықты қолдамау","табиғи аумақты сақтау","мазаламау","мектеп жобалары арқылы түсіндіру"]
+    },
+    en:{ name:"Caracal (rare predator)",
+      about:"A rare predator of southern Kazakhstan, included as a ‘secret hero’ in the story.",
+      threats:["habitat loss","poaching","disturbance","prey decline"],
+      help:["do not support illegal hunting","protect natural areas","do not disturb wildlife","educate via school projects"]
+    }
+  }
+];
+
+/* ====== Plants (your Red Book plants + sleep grass) ====== */
+const PLANTS = [
+  {
+    id:"tulip_greig",
+    img:"assets/plants/tulip_greig.png",
+    latin:"Tulipa greigii",
+    ru:{ name:"Тюльпан Грейга",
+      about:"Яркий тюльпан степей и предгорий. Один из символов весны Казахстана.",
+      threats:["срывают на букеты","вытаптывание","пожары в степи","распашка и строительство"],
+      help:["не срывать и не выкапывать","фотографировать вместо сбора","не ходить по цветущим участкам","рассказывать другим правила"]
+    },
+    kz:{ name:"Грейг қызғалдағы",
+      about:"Дала мен тау бөктерінің жарқын қызғалдағы. Қазақстан көктемінің белгісі.",
+      threats:["жинап жұлу","таптау","дала өрті","жер жырту/құрылыс"],
+      help:["жұлмау, қазып алмау","жинаудың орнына суретке түсіру","гүл өскен жерді таптамау","ереже түсіндіру"]
+    },
+    en:{ name:"Greig’s tulip",
+      about:"A bright tulip of steppes and foothills; a spring symbol of Kazakhstan.",
+      threats:["picked for bouquets","trampling","steppe fires","plowing/construction"],
+      help:["do not pick or dig up","take photos instead","avoid trampling","share protection rules"]
+    }
+  },
+  {
+    id:"tulip_kaufman",
+    img:"assets/plants/tulip_kaufman.png",
+    latin:"Tulipa kaufmanniana",
+    ru:{ name:"Тюльпан Кауфмана",
+      about:"Ранний тюльпан, цветёт одним из первых. Очень уязвим в период цветения.",
+      threats:["срывание цветков","вытаптывание туристами","пожары","сбор луковиц"],
+      help:["соблюдать тропы","не срывать цветы","не выкапывать луковицы","участвовать в эко-памятках/плакатах"]
+    },
+    kz:{ name:"Кауфман қызғалдағы",
+      about:"Ерте гүлдейтін қызғалдақ. Гүлдеу кезінде өте осал.",
+      threats:["гүлін жұлу","таптау","өрт","пиязшықты қазу"],
+      help:["соқпақпен жүру","гүл жұлмау","пиязшық қазбау","эко-плакат, жадынама жасау"]
+    },
+    en:{ name:"Kaufmann’s tulip",
+      about:"An early tulip that blooms first; very vulnerable during flowering.",
+      threats:["picking flowers","tourist trampling","fires","digging bulbs"],
+      help:["stay on paths","do not pick","do not dig bulbs","create posters/QR tips"]
+    }
+  },
+  {
+    id:"tulip_regel",
+    img:"assets/plants/tulip_regel.png",
+    latin:"Tulipa regelii",
+    ru:{ name:"Тюльпан Регеля",
+      about:"Редчайший тюльпан с необычными листьями. Встречается на каменистых склонах.",
+      threats:["вытаптывание","сбор и выкапывание","разрушение склонов","свалки/мусор"],
+      help:["не ходить по склонам с редкими растениями","не собирать и не выкапывать","убирать мусор","делать таблички-предупреждения"]
+    },
+    kz:{ name:"Регель қызғалдағы",
+      about:"Өте сирек, жапырағы ерекше қызғалдақ. Тастақты беткейлерде өседі.",
+      threats:["таптау","жинап-қазу","беткейдің бұзылуы","қоқыс"],
+      help:["сирек өсімдік өсетін жерге шықпау","жұлмау/қазбау","қоқыс жинау","ескерту тақтайшасы"]
+    },
+    en:{ name:"Regel’s tulip",
+      about:"Extremely rare tulip with unusual leaves, found on rocky slopes.",
+      threats:["trampling","collecting/digging","slope destruction","litter"],
+      help:["avoid rare sites","don’t pick/dig","clean up litter","add warning signs"]
+    }
+  },
+  {
+    id:"fritillaria_pale",
+    img:"assets/plants/fritillaria_pale.png",
+    latin:"Fritillaria pallidiflora",
+    ru:{ name:"Рябчик бледноцветковый",
+      about:"Редкое весеннее растение предгорий. Красиво цветёт, но легко исчезает.",
+      threats:["срывание","вытаптывание","пожары","сбор луковиц"],
+      help:["не срывать и не выкапывать","бережно относиться к местам цветения","не разводить огонь в степи","объяснять правила другим"]
+    },
+    kz:{ name:"Бозгүл бәйшешек (рябчик)",
+      about:"Тау бөктерінің сирек көктемгі өсімдігі. Әдемі гүлдейді, бірақ оңай жоғалады.",
+      threats:["жұлу","таптау","өрт","пиязшық қазу"],
+      help:["жұлмау/қазбау","гүлдеген жерді сақтау","далада от жақпау","ереже түсіндіру"]
+    },
+    en:{ name:"Pale-flowered fritillary",
+      about:"A rare spring plant of foothills—beautiful but fragile.",
+      threats:["picking","trampling","fires","digging bulbs"],
+      help:["don’t pick/dig","protect flowering sites","avoid fires","teach others"]
+    }
+  },
+  {
+    id:"iris_albert",
+    img:"assets/plants/iris_albert.png",
+    latin:"Iris alberti",
+    ru:{ name:"Ирис Альберта",
+      about:"Редкий ирис предгорий. Нуждается в охране мест произрастания.",
+      threats:["сбор на букеты","вытаптывание","пожары","застройка/распашка"],
+      help:["не срывать","не топтать цветущие места","беречь степь от пожаров","делать памятки и рисунки-агитки"]
+    },
+    kz:{ name:"Альберт құртқашашы (ирис)",
+      about:"Тау бөктеріндегі сирек ирис. Өсетін жерін қорғау қажет.",
+      threats:["букетке жұлу","таптау","өрт","жер жырту/құрылыс"],
+      help:["жұлмау","гүлдеген жерді таптамау","өрттің алдын алу","жадынама, сурет жасау"]
+    },
+    en:{ name:"Albert’s iris",
+      about:"A rare foothill iris that needs habitat protection.",
+      threats:["picking","trampling","fires","plowing/building"],
+      help:["don’t pick","avoid trampling","prevent fires","make awareness posters"]
+    }
+  },
+  {
+    id:"sleep_grass",
+    img:"assets/plants/sleep_grass.png",
+    latin:"Pulsatilla spp.",
+    ru:{ name:"Сон-трава",
+      about:"Нежное ранневесеннее растение. Часто страдает от сбора и вытаптывания.",
+      threats:["срывание ради «красоты»","вытаптывание","пожары","сбор в большие букеты"],
+      help:["не рвать и не собирать букетами","ходить по тропам","фотографировать вместо сбора","рассказывать о важности ранневесенних растений"]
+    },
+    kz:{ name:"Ұйқы шөбі (сон-трава)",
+      about:"Ерте көктемде гүлдейтін нәзік өсімдік. Жиі жұлынудан және тапталудан зардап шегеді.",
+      threats:["әдемілік үшін жұлу","таптау","өрт","үлкен букетке жинау"],
+      help:["жұлмау, букетке жинамау","соқпақпен жүру","суретке түсіру","ерте көктем өсімдіктерінің маңызын түсіндіру"]
+    },
+    en:{ name:"Sleep grass",
+      about:"A delicate early-spring plant often harmed by picking and trampling.",
+      threats:["picked for beauty","trampling","fires","large bouquets"],
+      help:["don’t pick","stay on paths","take photos","explain its importance"]
+    }
+  }
+];
+
+/* ====== State ====== */
+let lang = localStorage.getItem(LS_LANG) || "ru";
+let bg = localStorage.getItem(LS_BG) || "meadow";
+let tab = localStorage.getItem(LS_TAB) || "animals"; // animals|plants
+
+document.body.dataset.bg = bg;
+
+/* ====== Helpers ====== */
+function t(key){ return (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : I18N.ru[key]; }
+
+function applyActiveButtons(){
+  $$("[data-lang]").forEach(b=>b.classList.toggle("active", b.dataset.lang===lang));
+  $$("[data-bg]").forEach(b=>b.classList.toggle("active", b.dataset.bg===bg));
+
+  $("#tabAnimals").classList.toggle("active", tab==="animals");
+  $("#tabPlants").classList.toggle("active", tab==="plants");
+  $("#tabAnimals").setAttribute("aria-selected", tab==="animals" ? "true" : "false");
+  $("#tabPlants").setAttribute("aria-selected", tab==="plants" ? "true" : "false");
+}
+
+function setStaticText(){
+  $("#brandTitle").textContent = t("brandTitle");
+  $("#brandSub").textContent = t("brandSub");
+  $("#toHome").textContent = t("toHome");
+
+  $("#tabAnimals").textContent = t("tabAnimals");
+  $("#tabPlants").textContent = t("tabPlants");
+
+  if(tab==="animals"){
+    $("#pageTitle").textContent = t("titleAnimals");
+    $("#pageLead").textContent  = t("leadAnimals");
+  } else {
+    $("#pageTitle").textContent = t("titlePlants");
+    $("#pageLead").textContent  = t("leadPlants");
+  }
+
+  $("#btnSpeakAll").textContent = t("speakIntro");
+  $("#btnStop").textContent = t("stop");
+  $("#mAboutH").textContent = t("mAboutH");
+  $("#mWhyH").textContent = t("mWhyH");
+  $("#mHelpH").textContent = t("mHelpH");
+}
+
+/* ====== Rendering ====== */
+function currentList(){
+  return tab==="plants" ? PLANTS : ANIMALS;
+}
+
+function renderCards(){
+  const grid = $("#grid");
+  grid.innerHTML = "";
+
+  currentList().forEach(sp=>{
+    const d = sp[lang] || sp.ru;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="thumb">
+        <img src="${sp.img}" alt="${d.name}">
+        <div class="fallback">(${d.name})</div>
+      </div>
+      <div class="content">
+        <h3 class="title">${d.name}</h3>
+        <div class="latin">${sp.latin || ""}</div>
+        <p class="desc">${d.about}</p>
+      </div>
+      <div class="actions">
+        <button class="btn primary" data-act="more">${t("more")}</button>
+        <button class="btn teal" data-act="speak">${t("speak")}</button>
+        <button class="btn" data-act="threats">${t("threats")}</button>
+        <button class="btn" data-act="help">${t("help")}</button>
+      </div>
+    `;
+
+    const img = card.querySelector("img");
+    img.addEventListener("error", ()=>{
+      img.style.display="none";
+      card.querySelector(".fallback").style.display="flex";
+    });
+
+    card.querySelectorAll("[data-act]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const act = btn.dataset.act;
+        if(act==="more") openModal(sp);
+        if(act==="speak") speakSpecies(sp);
+        if(act==="threats") openModal(sp, "threats");
+        if(act==="help") openModal(sp, "help");
+      });
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+/* ====== Modal ====== */
+let modalSpecies = null;
+
+function openModal(sp, focus=null){
+  modalSpecies = sp;
+  const d = sp[lang] || sp.ru;
+
+  $("#modalTitle").textContent = d.name;
+  $("#modalImg").src = sp.img;
+  $("#modalImg").alt = d.name;
+  $("#mLatin").textContent = sp.latin ? sp.latin : "";
+
+  $("#mAbout").textContent = d.about;
+
+  const th = $("#mThreats");
+  th.innerHTML = "";
+  (d.threats || []).forEach(x=>{
+    const li=document.createElement("li"); li.textContent=x; th.appendChild(li);
+  });
+
+  const hp = $("#mHelp");
+  hp.innerHTML = "";
+  (d.help || []).forEach(x=>{
+    const li=document.createElement("li"); li.textContent=x; hp.appendChild(li);
+  });
+
+  $("#modalBack").style.display = "flex";
+
+  if(focus==="threats") th.scrollIntoView({behavior:"smooth", block:"start"});
+  if(focus==="help") hp.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* ====== Speech ====== */
+function stopSpeak(){
+  try{ speechSynthesis.cancel(); }catch(e){}
+}
+function pickVoice(preferLang){
+  const voices = speechSynthesis.getVoices ? speechSynthesis.getVoices() : [];
+  const lc = (preferLang||"ru").toLowerCase();
+
+  let v = voices.find(x => (x.lang||"").toLowerCase().startsWith(lc));
+  if(v) return v;
+
+  if(lc==="kz"){
+    v = voices.find(x => (x.lang||"").toLowerCase().startsWith("ru"));
+    if(v) return v;
+  }
+  if(lc!=="en"){
+    v = voices.find(x => (x.lang||"").toLowerCase().startsWith("en"));
+    if(v) return v;
+  }
+  return voices[0] || null;
+}
+function speakText(text){
+  stopSpeak();
+  if(!("speechSynthesis" in window)){
+    alert("Озвучка недоступна в этом браузере.");
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1.0;
+  u.pitch = 1.05;
+  const v = pickVoice(lang);
+  if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+function speakSpecies(sp){
+  const d = sp[lang] || sp.ru;
+  const parts = [
+    d.name + ".",
+    d.about,
+    (d.threats?.length ? (t("mWhyH")+": " + d.threats.join(", ") + ".") : ""),
+    (d.help?.length ? (t("mHelpH")+": " + d.help.join(", ") + ".") : "")
+  ].filter(Boolean);
+  speakText(parts.join(" "));
+}
+
+/* ====== Events ====== */
+function setLang(next){
+  lang = next;
+  localStorage.setItem(LS_LANG, lang);
+  applyActiveButtons();
+  setStaticText();
+  renderCards();
+  if(modalSpecies) openModal(modalSpecies);
+}
+function setBg(next){
+  bg = next;
+  document.body.dataset.bg = bg;
+  localStorage.setItem(LS_BG, bg);
+  applyActiveButtons();
+}
+function setTab(next){
+  tab = next;
+  localStorage.setItem(LS_TAB, tab);
+  applyActiveButtons();
+  setStaticText();
+  renderCards();
+}
+
+$$("[data-lang]").forEach(b=>b.addEventListener("click", ()=>setLang(b.dataset.lang)));
+$$("[data-bg]").forEach(b=>b.addEventListener("click", ()=>setBg(b.dataset.bg)));
+
+$("#tabAnimals").addEventListener("click", ()=>setTab("animals"));
+$("#tabPlants").addEventListener("click", ()=>setTab("plants"));
+
+$("#btnSpeakAll").addEventListener("click", ()=>{
+  const intro = {
+    ru: tab==="plants"
+      ? "Здравствуйте, Хранители! Это — страница растений Красной книги. Нажимайте «Подробнее» и слушайте голос Феи. Помните: цветы нельзя срывать — их нужно беречь."
+      : "Здравствуйте, Хранители! Это — страница живых героев Красной книги. Нажимайте «Подробнее», чтобы открыть карточку вида. Черепаха — сердце нашего проекта.",
+    kz: tab==="plants"
+      ? "Сәлем, Сақшылар! Бұл — Қызыл кітап өсімдіктері беті. «Толығырақ» басып, Феяны тыңдаңдар. Гүлдерді жұлмау керек — оларды қорғау қажет."
+      : "Сәлем, Сақшылар! Бұл — Қызыл кітап қаһармандары беті. «Толығырақ» басып, карточканы ашыңдар. Тасбақа — жобаның жүрегі.",
+    en: tab==="plants"
+      ? "Hello, Guardians! This is the Red Book plants page. Tap “Details” and listen to the Fairy. Remember: never pick rare flowers—protect them."
+      : "Hello, Guardians! This is the page of Red Book heroes. Tap “Details” to open a species card. The turtle is the heart of our project."
+  };
+  speakText((intro[lang]||intro.ru));
+});
+$("#btnStop").addEventListener("click", stopSpeak);
+
+$("#modalClose").addEventListener("click", ()=>{
+  $("#modalBack").style.display="none";
+  modalSpecies = null;
+});
+$("#modalBack").addEventListener("click", (e)=>{
+  if(e.target.id==="modalBack"){
+    $("#modalBack").style.display="none";
+    modalSpecies = null;
+  }
+});
+$("#modalSpeak").addEventListener("click", ()=>{
+  if(modalSpecies) speakSpecies(modalSpecies);
+});
+
+/* voices load fix */
+if("speechSynthesis" in window){
+  speechSynthesis.onvoiceschanged = ()=>{};
+}
+
+/* init */
+(function init(){
+  const savedBg = localStorage.getItem(LS_BG);
+  if(savedBg) bg = savedBg;
+
+  const savedLang = localStorage.getItem(LS_LANG);
+  if(savedLang) lang = savedLang;
+
+  const savedTab = localStorage.getItem(LS_TAB);
+  if(savedTab) tab = savedTab;
+
+  setBg(bg);
+  setLang(lang); // triggers render + texts
+  setTab(tab);
+})();
+</script>
+</body>
+</html>

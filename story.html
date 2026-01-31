@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Сказка — Черепаший уголок</title>
+  <style>
+    :root{
+      --bg1:#dff7ee;
+      --bg2:#e9f6ff;
+      --card:#ffffffcc;
+      --stroke:rgba(0,0,0,.08);
+      --shadow: 0 18px 45px rgba(0,0,0,.12);
+      --blue:#2d7cf7;
+      --teal:#14b8a6;
+      --text:#10324a;
+      --muted:#4e6b7d;
+      --pill:#ffffffc9;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 20%, var(--bg2), transparent 60%),
+        radial-gradient(1000px 700px at 80% 10%, var(--bg1), transparent 60%),
+        linear-gradient(180deg, #f3fff9 0%, #e9fbff 100%);
+      min-height:100vh;
+    }
+
+    /* Themes */
+    body[data-bg="meadow"]{
+      --bg1:#dff7ee; --bg2:#e9f6ff;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, var(--bg2), transparent 60%),
+        radial-gradient(1000px 700px at 80% 10%, var(--bg1), transparent 60%),
+        linear-gradient(180deg, #f3fff9 0%, #e9fbff 100%);
+    }
+    body[data-bg="lake"]{
+      --bg1:#d7f3ff; --bg2:#e7fbff;
+      background:
+        radial-gradient(1100px 650px at 20% 20%, #e9fbff, transparent 60%),
+        radial-gradient(1100px 650px at 75% 15%, #d7f3ff, transparent 60%),
+        linear-gradient(180deg, #f2fbff 0%, #e7fbff 100%);
+    }
+    body[data-bg="steppe"]{
+      --bg1:#fff2d7; --bg2:#eafff2;
+      background:
+        radial-gradient(1100px 650px at 20% 20%, #fff7e6, transparent 60%),
+        radial-gradient(1100px 650px at 75% 15%, #e9fff3, transparent 60%),
+        linear-gradient(180deg, #fffaf0 0%, #eafff2 100%);
+    }
+    body[data-bg="night"]{
+      --text:#eaf7ff; --muted:#c6d8e7;
+      --card:rgba(12,22,35,.68);
+      --stroke:rgba(255,255,255,.10);
+      background:
+        radial-gradient(1200px 700px at 20% 20%, rgba(40,130,255,.20), transparent 60%),
+        radial-gradient(900px 700px at 80% 10%, rgba(20,240,190,.14), transparent 60%),
+        linear-gradient(180deg, #071625 0%, #06101b 100%);
+    }
+
+    .wrap{max-width:1180px;margin:0 auto;padding:22px 16px 60px}
+    .topbar{
+      display:flex;align-items:center;gap:14px;justify-content:space-between;
+      padding:14px 16px;border:1px solid var(--stroke);
+      border-radius:18px;background:var(--card);box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:260px}
+    .emblem{
+      width:62px;height:62px;border-radius:16px;object-fit:contain;
+      background:rgba(255,255,255,.5);border:1px solid var(--stroke);
+      padding:6px;
+    }
+    .brand h1{margin:0;font-size:16px;line-height:1.1}
+    .brand small{display:block;color:var(--muted);margin-top:2px}
+
+    .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      display:flex;gap:6px;align-items:center;
+      background:var(--pill);border:1px solid var(--stroke);
+      border-radius:999px;padding:6px 8px;
+    }
+    .btn{
+      border:1px solid var(--stroke);
+      background:#fff; color:var(--text);
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s transform,.15s opacity,.15s background;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      justify-content:center;
+    }
+    body[data-bg="night"] .btn{background:rgba(255,255,255,.10);color:var(--text)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.active{background:linear-gradient(90deg,#36c2ff,#2d7cf7); color:white; border-color:transparent}
+    .btn.bg{font-weight:800}
+    .btn.ghost{background:transparent}
+    .btn.small{padding:7px 10px;font-weight:800}
+    .btn.primary{
+      background:linear-gradient(90deg,#36c2ff,#2d7cf7);
+      color:#fff;border-color:transparent;
+    }
+    .btn.teal{
+      background:linear-gradient(90deg,#2ee7c8,#14b8a6);
+      color:#053b3b;border-color:transparent;
+      font-weight:900;
+    }
+
+    .hero{
+      margin-top:18px;
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      background:var(--card);
+      box-shadow:var(--shadow);
+      padding:22px 18px;
+      text-align:center;
+    }
+    .hero h2{margin:0 0 8px;font-size:30px}
+    .hero p{margin:0 auto;max-width:900px;color:var(--muted);line-height:1.45}
+    .hero .row{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+    .layout{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .layout{grid-template-columns:1fr} }
+
+    .panel{
+      border:1px solid var(--stroke);
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:0 14px 28px rgba(0,0,0,.10);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding:14px 14px 12px;
+      border-bottom:1px solid var(--stroke);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .panelHead h3{margin:0;font-size:16px}
+    .panelBody{padding:12px 14px 14px}
+
+    .chapters{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .chapterBtn{
+      width:100%;
+      justify-content:flex-start;
+      font-weight:900;
+      text-align:left;
+      padding:10px 12px;
+      border-radius:14px;
+    }
+    .chapterBtn.active{
+      background:linear-gradient(90deg,#2ee7c8,#14b8a6);
+      color:#053b3b;border-color:transparent;
+    }
+    .meta{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .storyCard{
+      padding:16px 16px 18px;
+    }
+    .storyTitle{
+      margin:0;
+      font-size:22px;
+    }
+    .storyTag{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .storyText{
+      margin-top:12px;
+      line-height:1.65;
+      color:var(--text);
+      font-size:15px;
+      text-align:left;
+      white-space:pre-wrap;
+    }
+    body[data-bg="night"] .storyText{color:#eaf7ff}
+    .hint{
+      margin-top:12px;
+      border:1px dashed var(--stroke);
+      border-radius:14px;
+      padding:10px 12px;
+      color:var(--muted);
+      font-size:13px;
+      background:rgba(255,255,255,.35);
+    }
+    body[data-bg="night"] .hint{background:rgba(255,255,255,.06)}
+
+    .footer{
+      margin-top:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      padding:10px 0 0;
+    }
+  </style>
+</head>
+
+<body data-bg="meadow">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <img class="emblem" src="assets/emblem.png" alt="Эмблема проекта" onerror="this.style.display='none'">
+        <div>
+          <h1 id="brandTitle">Черепаший уголок</h1>
+          <small id="brandSub">Хранители Красной книги</small>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="pill" aria-label="Язык">
+          <button class="btn small" data-lang="ru">RU</button>
+          <button class="btn small" data-lang="kz">KZ</button>
+          <button class="btn small" data-lang="en">EN</button>
+        </div>
+        <div class="pill" aria-label="Фон">
+          <button class="btn small bg" data-bg="meadow" id="bgMeadow">Луг</button>
+          <button class="btn small bg" data-bg="lake" id="bgLake">Озеро</button>
+          <button class="btn small bg" data-bg="steppe" id="bgSteppe">Степь</button>
+          <button class="btn small bg" data-bg="night" id="bgNight">Ночь</button>
+        </div>
+        <a class="btn ghost" href="index.html" id="toHome">← На главную</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h2 id="pageTitle">Сказка Черепашьего уголка</h2>
+      <p id="pageLead">
+        Здесь всё начинается. Фея открывает Красную книгу как живую историю, а Черепаха ведёт нас через степь, озеро и ночь —
+        к спасению героев и растений.
+      </p>
+      <div class="row">
+        <button class="btn teal" id="btnSpeakIntro">🔊 Озвучить вступление</button>
+        <button class="btn primary" id="btnSpeakScene">🔊 Озвучить главу</button>
+        <button class="btn" id="btnStop">⏹ Стоп</button>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="panelHead">
+          <h3 id="tocTitle">Содержание</h3>
+          <button class="btn small" id="btnRandom">🎲 Случайная глава</button>
+        </div>
+        <div class="panelBody">
+          <div class="chapters" id="chapters"></div>
+          <div class="meta" id="meta">
+            Совет: после каждой главы можно перейти к «Живым героям» и открыть карточки тех, кто упоминается в истории.
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;justify-content:flex-start">
+            <a class="btn" href="animals.html" id="toAnimals">🐾 Живые герои</a>
+            <a class="btn" href="tasks.html" id="toTasks">🧩 Задания хранителей</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel storyCard">
+        <h3 class="storyTitle" id="sceneTitle">Глава 1. Когда книга проснулась</h3>
+        <div class="storyTag" id="sceneTag">Локация: Луг • Настроение: свет</div>
+        <div class="storyText" id="sceneText"></div>
+
+        <div class="hint" id="sceneHint">
+          ✨ Мини-задание: найди в тексте 3 «правила хранителя» и расскажи их вслух (или запиши в тетрадь).
+        </div>
+      </div>
+    </div>
+
+    <div class="footer" id="credits">
+      © Эко-проект «Черепаший уголок: хранители Красной книги».
+      КГУ «Общеобразовательная школа № 1» отдела образования города Балхаш управления образования Карагандинской области,
+      учащиеся 7 «Б» класса.
+    </div>
+  </div>
+
+<script>
+/* ====== Settings ====== */
+const LS_LANG = "eco_lang";
+const LS_BG   = "eco_bg";
+const LS_SCENE= "eco_story_scene";
+
+const $ = (s)=>document.querySelector(s);
+const $$ = (s)=>Array.from(document.querySelectorAll(s));
+
+/* ====== i18n ====== */
+const I18N = {
+  ru:{
+    brandTitle:"Черепаший уголок",
+    brandSub:"Хранители Красной книги",
+    toHome:"← На главную",
+    pageTitle:"Сказка Черепашьего уголка",
+    pageLead:"Здесь всё начинается. Фея открывает Красную книгу как живую историю, а Черепаха ведёт нас через степь, озеро и ночь — к спасению героев и растений.",
+    tocTitle:"Содержание",
+    random:"🎲 Случайная глава",
+    toAnimals:"🐾 Живые герои",
+    toTasks:"🧩 Задания хранителей",
+    meta:"Совет: после каждой главы можно перейти к «Живым героям» и открыть карточки тех, кто упоминается в истории.",
+    speakIntro:"🔊 Озвучить вступление",
+    speakScene:"🔊 Озвучить главу",
+    stop:"⏹ Стоп",
+    loc:"Локация",
+    mood:"Настроение",
+    hintPrefix:"✨ Мини-задание:"
+  },
+  kz:{
+    brandTitle:"Тасбақа бұрышы",
+    brandSub:"Қызыл кітап сақшылары",
+    toHome:"← Басты бетке",
+    pageTitle:"Тасбақа бұрышының ертегісі",
+    pageLead:"Мұнда бәрі басталады. Фея Қызыл кітапты тірі ертегі ретінде ашады, ал Тасбақа бізді дала, көл және түн арқылы алып өтіп, қаһармандар мен өсімдіктерді қорғауға жетелейді.",
+    tocTitle:"Мазмұны",
+    random:"🎲 Кездейсоқ бөлім",
+    toAnimals:"🐾 Тірі қаһармандар",
+    toTasks:"🧩 Сақшылар тапсырмалары",
+    meta:"Кеңес: әр бөлімнен кейін «Тірі қаһармандарға» өтіп, ертегіде айтылған түрлердің карточкаларын ашуға болады.",
+    speakIntro:"🔊 Кіріспені дыбыстау",
+    speakScene:"🔊 Бөлімді дыбыстау",
+    stop:"⏹ Тоқтату",
+    loc:"Орын",
+    mood:"Көңіл-күй",
+    hintPrefix:"✨ Шағын тапсырма:"
+  },
+  en:{
+    brandTitle:"Turtle Corner",
+    brandSub:"Red Book Guardians",
+    toHome:"← Home",
+    pageTitle:"The Turtle Corner Fairy Tale",
+    pageLead:"Everything starts here. The Fairy opens the Red Book as a living story, and the Turtle guides us through meadow, steppe, lake, and night—to protect heroes and rare plants.",
+    tocTitle:"Chapters",
+    random:"🎲 Random chapter",
+    toAnimals:"🐾 Living heroes",
+    toTasks:"🧩 Guardian tasks",
+    meta:"Tip: after each chapter, open “Living heroes” and view cards of the species mentioned in the story.",
+    speakIntro:"🔊 Speak intro",
+    speakScene:"🔊 Speak chapter",
+    stop:"⏹ Stop",
+    loc:"Location",
+    mood:"Mood",
+    hintPrefix:"✨ Mini-task:"
+  }
+};
+
+/* ====== Story scenes (ALL animals + plants included) ====== */
+const SCENES = [
+  {
+    id:"s1",
+    loc:{ru:"Луг",kz:"Шалғын",en:"Meadow"},
+    mood:{ru:"свет",kz:"жарық",en:"light"},
+    title:{
+      ru:"Глава 1. Когда книга проснулась",
+      kz:"1-бөлім. Кітап оянған сәт",
+      en:"Chapter 1. When the book awakened"
+    },
+    text:{
+      ru:
+`Фея Черепашьего уголка раскрыла старую Красную книгу. На страницах не было пыли — только мягкий свет, будто кто-то дышал между строк.
+
+— Здравствуй, Хранитель, — сказала Фея. — Это не учебник. Это живой путь.
+
+Из-за страницы осторожно выглянула Среднеазиатская черепаха. Она была маленькой, но взгляд — взрослый, степной.
+— Я помню, как трава была выше моих следов… — прошептала Черепаха. — Но сейчас многие забыли правила.
+
+Фея подняла ладонь, и в воздухе зажглись три слова:
+1) НЕ БЕРИ из природы домой.
+2) НЕ ЖГИ траву.
+3) НЕ ОСТАВЛЯЙ мусор.
+
+— Если мы сохраним правила, — сказала Фея, — мы сможем спасти и героев, и редкие цветы. Сегодня ты станешь настоящим хранителем.`,
+
+      kz:
+`Фея Қызыл кітапты ашты. Беттерінде шаң жоқ еді — тек нәзік жарық, сөздердің арасында тыныс бардай.
+
+— Сәлем, Сақшы, — деді Фея. — Бұл оқулық емес. Бұл — тірі жол.
+
+Бет арасынан Ортаазиялық тасбақа сығалап шықты. Өзі кішкентай, ал көзқарасы — даладай байсалды.
+— Шөп менің ізімнен де биік болған кездерді білемін… — деді ол. — Бірақ қазір көп адам ережені ұмытады.
+
+Фея алақанын көтерді де, ауада үш ереже жанды:
+1) Табиғаттан үйге әкетпе.
+2) Шөп өртеме.
+3) Қоқыс қалдырма.
+
+— Ережені сақтасақ, — деді Фея, — жануарларды да, сирек гүлдерді де қорғаймыз. Бүгін сен нағыз сақшы боласың.`,
+
+      en:
+`The Fairy opened the old Red Book. The pages were not dusty—only a gentle glow, as if the story itself was breathing.
+
+“Hello, Guardian,” the Fairy said. “This is not a textbook. This is a living path.”
+
+A Central Asian tortoise peeked out from between the pages—small, but with a wise steppe gaze.
+“I remember when the grass was taller than my tracks,” whispered the Turtle. “But many people forgot the rules.”
+
+The Fairy raised her hand, and three rules lit up in the air:
+1) Do NOT take wildlife home.
+2) Do NOT burn grass.
+3) Leave NO trash.
+
+“If we keep these rules,” the Fairy said, “we can protect both heroes and rare flowers. Today you become a true guardian.”`
+    },
+    hint:{
+      ru:"найди в тексте 3 «правила хранителя» и расскажи их вслух (или запиши).",
+      kz:"мәтіннен 3 «сақшы ережесін» тауып, дауыстап айт (немесе жаз).",
+      en:"find the 3 “guardian rules” and say them aloud (or write them down)."
+    }
+  },
+
+  {
+    id:"s2",
+    loc:{ru:"Степь",kz:"Дала",en:"Steppe"},
+    mood:{ru:"ветер",kz:"жел",en:"wind"},
+    title:{
+      ru:"Глава 2. Степной дозор",
+      kz:"2-бөлім. Даладағы күзет",
+      en:"Chapter 2. Steppe watch"
+    },
+    text:{
+      ru:
+`Черепаха повела Хранителя по степи. Далеко впереди бежал Сайгак — как живая стрелка компаса.
+— Мой путь длинный, — сказал он. — Но иногда дорога обрывается забором… или выстрелом.
+
+Над степью кружил Степной орёл.
+— Я вижу пожары раньше других, — сказал орёл. — Когда дым поднимается, земля теряет и траву, и гнёзда.
+
+Из полупустыни показался Джейран — тихий, как тень.
+— Нас пугают машины и шум, — вздохнул он. — Мы уходим, и степь пустеет.
+
+И тогда из камней мелькнул Манул:
+— Сохраняйте укрытия. Камни — не просто камни. Это дом.
+
+А вдалеке, словно рыжий вихрь, остановился Корсак:
+— Не оставляйте пищу и мусор. Это ловушка для всех.
+
+Фея записала в книгу: «Степи нужен покой. Степи нужны правила».`,
+      kz:
+`Тасбақа Сақшыны далаға ертіп шықты. Алыста Киік жүгірді — тірі компас сияқты.
+— Менің жолым ұзақ, — деді киік. — Бірақ кейде көшу жолын қоршау немесе оқ тоқтатады.
+
+Дала үстінде Дала бүркіті қалықтады.
+— Өртті бәрінен бұрын көремін, — деді ол. — Түтін шықса, жер шөптен де, ұядан да айырылады.
+
+Шөлейттен Жейран көрінді — көлеңкедей тыныш.
+— Шу мен машиналар бізді қорқытады, — деді ол. — Біз кетеміз, дала бос қалады.
+
+Сонда тастар арасынан Манул жылт етті:
+— Пананы сақтаңдар. Тастар — жай тас емес. Бұл — үй.
+
+Ал алыстан қызыл құйын сияқты Корсак тоқтады:
+— Тамақ қалдығы мен қоқыс қалдырмаңдар. Ол бәріне тұзақ.
+
+Фея кітапқа жазды: «Далаға тыныштық керек. Далаға ереже керек».`,
+      en:
+`The Turtle led the Guardian across the steppe. Far ahead, the Saiga ran like a living compass needle.
+“My path is long,” said the Saiga, “but sometimes it is blocked by fences… or by shots.”
+
+Above the steppe, a Steppe Eagle circled.
+“I see fires before others,” said the Eagle. “When smoke rises, the land loses grass and nests.”
+
+From the semi-desert, a Goitered Gazelle appeared—quiet as a shadow.
+“Machines and noise scare us,” it sighed. “We leave—and the steppe becomes empty.”
+
+Then a Manul flashed between stones:
+“Protect shelters. Stones are not just stones. They are homes.”
+
+And like a reddish whirlwind, a Corsac Fox stopped in the distance:
+“Do not leave food and trash. It becomes a trap for everyone.”
+
+The Fairy wrote: “The steppe needs calm. The steppe needs rules.”`
+    },
+    hint:{
+      ru:"выбери одного героя степи и придумай 2 правила помощи именно ему.",
+      kz:"дала қаһармандарының бірін таңдап, оған көмектесетін 2 ереже ойлап тап.",
+      en:"choose one steppe hero and придумай 2 rules to help them."
+    }
+  },
+
+  {
+    id:"s3",
+    loc:{ru:"Озеро",kz:"Көл",en:"Lake"},
+    mood:{ru:"вода",kz:"су",en:"water"},
+    title:{
+      ru:"Глава 3. Озёрная страница",
+      kz:"3-бөлім. Көл беті",
+      en:"Chapter 3. The lake page"
+    },
+    text:{
+      ru:
+`Когда они подошли к воде, на поверхности дрогнул свет — будто книга смотрела на своё отражение.
+
+На камне сидела Реликтовая чайка.
+— Мне нужна тишина, — сказала она. — Когда люди подходят близко, колония пугается.
+
+Вдалеке расправил крылья Кудрявый пеликан.
+— Чистая вода — это жизнь, — сказал он. — Но сети и мусор делают воду ловушкой.
+
+Фея шепнула:
+— Хранитель, запомни: у озера главное — беречь границы. Не заходить туда, где гнёзда. Не оставлять того, что не унесёшь обратно.
+
+Черепаха кивнула:
+— Вода помнит всё. Особенно то, что мы бросаем в неё.`,
+
+      kz:
+`Олар суға жақындағанда, бетінде жарық тербелді — кітап өз бейнесіне қарағандай.
+
+Таста Реликт шағала отырды.
+— Маған тыныштық керек, — деді ол. — Адамдар жақындаса, колония қорқады.
+
+Алыста Бұйра бірқазан қанатын жайды.
+— Таза су — өмір, — деді ол. — Тор мен қоқыс суды тұзаққа айналдырады.
+
+Фея сыбырлады:
+— Сақшы, есіңде болсын: көлде ең бастысы — шекараны сақтау. Ұя бар жерге кірме. Өзің әкелгенді міндетті түрде алып кет.
+
+Тасбақа басын изеді:
+— Су бәрін есте сақтайды. Әсіресе, біз тастағанды.`,
+
+      en:
+`As they reached the water, the surface shimmered—like the book was watching its own reflection.
+
+On a stone sat a Relict Gull.
+“I need silence,” it said. “When people come too close, the colony panics.”
+
+Far away, a Dalmatian Pelican spread its wings.
+“Clean water is life,” it said. “But nets and trash turn water into a trap.”
+
+The Fairy whispered:
+“Guardian, remember: at the lake, protect the boundaries. Do not enter nesting zones. Leave no waste behind.”
+
+The Turtle nodded:
+“Water remembers everything—especially what we throw into it.”`
+    },
+    hint:{
+      ru:"придумай знак/пиктограмму «Не подходи к гнёздам» и нарисуй на листе/в редакторе.",
+      kz:"«Ұяға жақындама» белгісін ойлап тауып, суретін сал.",
+      en:"invent a pictogram “Do not approach nests” and draw it."
+    }
+  },
+
+  {
+    id:"s4",
+    loc:{ru:"Предгорья",kz:"Тау бөктері",en:"Foothills"},
+    mood:{ru:"весна",kz:"көктем",en:"spring"},
+    title:{
+      ru:"Глава 4. Цветы, которые нельзя рвать",
+      kz:"4-бөлім. Жұлынбайтын гүлдер",
+      en:"Chapter 4. Flowers you must not pick"
+    },
+    text:{
+      ru:
+`Фея открыла новую страницу — и запахло весной.
+
+Сначала вспыхнул Тюльпан Грейга — яркий, как маленький костёр, который нельзя раздувать.
+Рядом осторожно раскрывался Тюльпан Кауфмана — ранний и хрупкий.
+А чуть дальше, на каменистом склоне, прятался редчайший Тюльпан Регеля.
+
+— Если сорвать один цветок, — сказала Фея, — кажется, что ничего не случится. Но если сорвут сто — исчезнет поляна.
+
+Из травы выглянул Рябчик бледноцветковый, словно колокольчик.
+Рядом расправил лепестки Ирис Альберта — как маленькое знамя красоты.
+А между ними тихо дышала Сон-трава — мягкая и нежная, но сильная.
+
+Черепаха произнесла:
+— Настоящий хранитель бережёт то, что растёт медленно.`,
+
+      kz:
+`Фея жаңа бетті ашты — көктемнің иісі сезілді.
+
+Алдымен Грейг қызғалдағы жарқ етті — рұқсатсыз жұлуға болмайтын оттай.
+Жанында Кауфман қызғалдағы ашылды — ерте әрі нәзік.
+Ал тастақты беткейде өте сирек Регель қызғалдағы жасырынды.
+
+— Бір гүлді жұлсаң, — деді Фея, — ештеңе болмағандай көрінеді. Ал жүз гүл жұлынса — алаң жойылады.
+
+Шөп арасынан Рябчик (бозгүл бәйшешек) қоңыраудай көрінді.
+Жанында Альберт құртқашашы ту сияқты жайылды.
+Ал олардың арасында Ұйқы шөбі тыныш дем алды — нәзік, бірақ төзімді.
+
+Тасбақа айтты:
+— Нағыз сақшы баяу өсетінді қорғайды.`,
+
+      en:
+`The Fairy opened a new page—and it smelled like spring.
+
+First, Greig’s Tulip flashed bright, like a tiny fire you must not feed.
+Nearby, Kaufmann’s Tulip unfolded—early and fragile.
+And on a rocky slope, the rare Regel’s Tulip hid quietly.
+
+“If you pick one flower,” said the Fairy, “it seems harmless. But if a hundred are picked—the meadow disappears.”
+
+A pale-flowered fritillary appeared like a bell.
+Albert’s iris opened like a small banner of beauty.
+And between them, sleep grass breathed softly—gentle, yet resilient.
+
+The Turtle said:
+“A true guardian protects what grows slowly.”`
+    },
+    hint:{
+      ru:"выбери одно растение и придумай для него 3 правила защиты (кратко).",
+      kz:"бір өсімдікті таңдап, оған 3 қысқа қорғаныс ережесін жаз.",
+      en:"choose one plant and write 3 short protection rules."
+    }
+  },
+
+  {
+    id:"s5",
+    loc:{ru:"Ночь",kz:"Түн",en:"Night"},
+    mood:{ru:"тайна",kz:"құпия",en:"mystery"},
+    title:{
+      ru:"Глава 5. Секретный герой",
+      kz:"5-бөлім. Құпия қаһарман",
+      en:"Chapter 5. The secret hero"
+    },
+    text:{
+      ru:
+`Ночью книга светилась сильнее. Фея шепнула:
+— Не все герои любят быть видимыми.
+
+На краю тени остановился Каракал — тихий и быстрый.
+— Я не прошу внимания, — сказал он. — Мне нужен дом. Без дома исчезают даже самые сильные.
+
+Черепаха медленно подняла голову:
+— Дом — это не клетка. Дом — это степь, вода и камни.
+
+Фея закрыла книгу на мгновение:
+— Хранитель, всё, что мы делаем в проекте, должно помогать дому: чистоте, тишине и безопасности.
+
+И звёзды в небе будто согласились.`,
+
+      kz:
+`Түнде кітап одан да жарық болды. Фея сыбырлады:
+— Барлық қаһармандар көзге көрінгенді ұнатпайды.
+
+Көлеңкенің шетінде Қарақал тоқтады — тыныш әрі шапшаң.
+— Маған назар керек емес, — деді ол. — Маған үй керек. Үй болмаса, ең күштілер де жоғалады.
+
+Тасбақа басын көтерді:
+— Үй — тор емес. Үй — дала, су және тастар.
+
+Фея кітапты бір сәтке жапты:
+— Сақшы, жобадағы әр іс үйге көмектессін: тазалыққа, тыныштыққа, қауіпсіздікке.
+
+Жұлдыздар да келіскендей болды.`,
+
+      en:
+`At night the book glowed even brighter. The Fairy whispered:
+“Not every hero wants to be seen.”
+
+At the edge of shadow, a Caracal stopped—silent and fast.
+“I don’t need attention,” it said. “I need a home. Without a home, even the strongest vanish.”
+
+The Turtle lifted its head slowly:
+“A home is not a cage. A home is the steppe, water, and stones.”
+
+The Fairy closed the book for a moment:
+“Guardian, everything we do in this project must help the home—cleanliness, calm, and safety.”
+
+Even the stars seemed to agree.`
+    },
+    hint:{
+      ru:"придумай одно «секретное правило» хранителя (то, о чём забывают).",
+      kz:"сақшының бір «құпия ережесін» ойлап тап (жиі ұмытылатын).",
+      en:"invent one ‘secret guardian rule’ people often forget."
+    }
+  },
+
+  {
+    id:"s6",
+    loc:{ru:"Финал",kz:"Аяқталу",en:"Finale"},
+    mood:{ru:"обещание",kz:"уәде",en:"promise"},
+    title:{
+      ru:"Глава 6. Клятва хранителя",
+      kz:"6-бөлім. Сақшы анты",
+      en:"Chapter 6. The guardian oath"
+    },
+    text:{
+      ru:
+`Фея закрыла книгу — и она стала легче. Но внутри стало больше света.
+
+— Почему? — спросил Хранитель.
+
+— Потому что Красная книга — это не только список редких видов, — ответила Фея. — Это обещание людей.
+
+Черепаха сделала шаг и произнесла клятву:
+— Я буду хранить степь для Сайгака и Джейрана.
+Я буду беречь камни для Манула.
+Я буду оставлять чистую воду для Чайки и Пеликана.
+Я не оставлю мусор — ради Корсака и всех остальных.
+Я буду защищать редкие цветы: тюльпаны, ирис, рябчик и сон-траву.
+Я буду помнить о секретном Каракале — и о каждом, кто не может громко попросить помощи.
+
+Фея улыбнулась:
+— Теперь ты готов к заданиям хранителей.`,
+
+      kz:
+`Фея кітапты жапты — ол жеңілдеп кетті. Бірақ ішінде жарық көбейді.
+
+— Неге? — деп сұрады Сақшы.
+
+— Қызыл кітап — тек сирек түрлер тізімі емес, — деді Фея. — Бұл — адамдардың уәдесі.
+
+Тасбақа қадам жасап, ант айтты:
+— Киік пен Жейран үшін даланы қорғаймын.
+Манул үшін тастарды сақтаймын.
+Шағала мен Бірқазан үшін суды таза ұстаймын.
+Корсак үшін қоқыс қалдырмаймын.
+Қызғалдақтарды, ирис, рябчик пен ұйқы шөбін қорғаймын.
+Құпия Қарақалды да ұмытпаймын — және көмек сұрай алмайтындардың бәрін.
+
+Фея жымиып:
+— Енді сен сақшылар тапсырмасына дайынсың.`,
+
+      en:
+`The Fairy closed the book—and it became lighter. Yet inside, there was more light than before.
+
+“Why?” asked the Guardian.
+
+“Because the Red Book is not only a list of rare species,” the Fairy replied. “It’s a promise people make.”
+
+The Turtle stepped forward and spoke an oath:
+“I will protect the steppe for the Saiga and the Gazelle.
+I will keep stones safe for the Manul.
+I will keep water clean for the Gull and the Pelican.
+I will leave no trash—for the Corsac and everyone else.
+I will protect rare flowers: tulips, iris, fritillary, and sleep grass.
+I will remember the secret Caracal—and every creature that cannot ask loudly for help.”
+
+The Fairy smiled:
+“Now you are ready for the guardian tasks.”`
+    },
+    hint:{
+      ru:"прочитай клятву вслух и выбери 2 пункта, которые ты сделаешь уже на этой неделе.",
+      kz:"антты дауыстап оқып, осы аптада орындайтын 2 тармақты таңда.",
+      en:"read the oath aloud and choose 2 points you will do this week."
+    }
+  }
+];
+
+/* ====== State ====== */
+let lang = localStorage.getItem(LS_LANG) || "ru";
+let bg = localStorage.getItem(LS_BG) || "meadow";
+let sceneId = localStorage.getItem(LS_SCENE) || "s1";
+document.body.dataset.bg = bg;
+
+/* ====== UI helpers ====== */
+function t(key){ return (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : I18N.ru[key]; }
+
+function applyActiveButtons(){
+  $$("[data-lang]").forEach(b=>b.classList.toggle("active", b.dataset.lang===lang));
+  $$("[data-bg]").forEach(b=>b.classList.toggle("active", b.dataset.bg===bg));
+}
+
+function setStaticText(){
+  $("#brandTitle").textContent = t("brandTitle");
+  $("#brandSub").textContent = t("brandSub");
+  $("#toHome").textContent = t("toHome");
+  $("#pageTitle").textContent = t("pageTitle");
+  $("#pageLead").textContent = t("pageLead");
+  $("#tocTitle").textContent = t("tocTitle");
+  $("#btnRandom").textContent = t("random");
+  $("#toAnimals").textContent = t("toAnimals");
+  $("#toTasks").textContent = t("toTasks");
+  $("#meta").textContent = t("meta");
+  $("#btnSpeakIntro").textContent = t("speakIntro");
+  $("#btnSpeakScene").textContent = t("speakScene");
+  $("#btnStop").textContent = t("stop");
+}
+
+function getScene(id){
+  return SCENES.find(s=>s.id===id) || SCENES[0];
+}
+
+function renderTOC(){
+  const box = $("#chapters");
+  box.innerHTML = "";
+  SCENES.forEach(s=>{
+    const btn = document.createElement("button");
+    btn.className = "btn chapterBtn";
+    btn.textContent = s.title[lang] || s.title.ru;
+    if(s.id===sceneId) btn.classList.add("active");
+    btn.addEventListener("click", ()=>{
+      sceneId = s.id;
+      localStorage.setItem(LS_SCENE, sceneId);
+      renderAll();
+    });
+    box.appendChild(btn);
+  });
+}
+
+function renderScene(){
+  const s = getScene(sceneId);
+  $("#sceneTitle").textContent = s.title[lang] || s.title.ru;
+  $("#sceneTag").textContent = `${t("loc")}: ${(s.loc[lang]||s.loc.ru)} • ${t("mood")}: ${(s.mood[lang]||s.mood.ru)}`;
+  $("#sceneText").textContent = s.text[lang] || s.text.ru;
+  $("#sceneHint").textContent = `${t("hintPrefix")} ${s.hint[lang] || s.hint.ru}`;
+}
+
+/* ====== Speech ====== */
+function stopSpeak(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+function pickVoice(preferLang){
+  const voices = speechSynthesis.getVoices ? speechSynthesis.getVoices() : [];
+  const lc = (preferLang||"ru").toLowerCase();
+  let v = voices.find(x => (x.lang||"").toLowerCase().startsWith(lc));
+  if(v) return v;
+  if(lc==="kz"){
+    v = voices.find(x => (x.lang||"").toLowerCase().startsWith("ru"));
+    if(v) return v;
+  }
+  if(lc!=="en"){
+    v = voices.find(x => (x.lang||"").toLowerCase().startsWith("en"));
+    if(v) return v;
+  }
+  return voices[0] || null;
+}
+
+function speakText(text){
+  stopSpeak();
+  if(!("speechSynthesis" in window)){
+    alert("Озвучка недоступна в этом браузере.");
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1.0;
+  u.pitch = 1.05;
+  const v = pickVoice(lang);
+  if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+/* ====== Events ====== */
+function setLang(next){
+  lang = next;
+  localStorage.setItem(LS_LANG, lang);
+  applyActiveButtons();
+  renderAll();
+}
+function setBg(next){
+  bg = next;
+  document.body.dataset.bg = bg;
+  localStorage.setItem(LS_BG, bg);
+  applyActiveButtons();
+}
+
+$$("[data-lang]").forEach(b=>b.addEventListener("click", ()=>setLang(b.dataset.lang)));
+$$("[data-bg]").forEach(b=>b.addEventListener("click", ()=>setBg(b.dataset.bg)));
+
+$("#btnSpeakIntro").addEventListener("click", ()=>{
+  const intro = {
+    ru:"Здравствуй, Хранитель! Сейчас ты читаешь сказку Черепашьего уголка. Выбирай главы слева и слушай голос Феи. Помни: редкие виды и растения живут там, где люди соблюдают правила.",
+    kz:"Сәлем, Сақшы! Қазір сен Тасбақа бұрышының ертегісін оқып отырсың. Сол жақтан бөлім таңда да, Феяның дауысын тыңда. Сирек түрлер ережені сақтайтын жерде ғана өмір сүреді.",
+    en:"Hello, Guardian! You are reading the Turtle Corner fairy tale. Choose chapters on the left and listen to the Fairy. Rare species survive where people follow rules."
+  };
+  speakText(intro[lang] || intro.ru);
+});
+
+$("#btnSpeakScene").addEventListener("click", ()=>{
+  const s = getScene(sceneId);
+  speakText((s.text[lang] || s.text.ru));
+});
+
+$("#btnStop").addEventListener("click", stopSpeak);
+
+$("#btnRandom").addEventListener("click", ()=>{
+  const idx = Math.floor(Math.random()*SCENES.length);
+  sceneId = SCENES[idx].id;
+  localStorage.setItem(LS_SCENE, sceneId);
+  renderAll();
+});
+
+/* voices load fix */
+if("speechSynthesis" in window){
+  speechSynthesis.onvoiceschanged = ()=>{};
+}
+
+/* ====== Render all ====== */
+function renderAll(){
+  setStaticText();
+  renderTOC();
+  renderScene();
+  applyActiveButtons();
+}
+
+/* init */
+(function init(){
+  const savedBg = localStorage.getItem(LS_BG);
+  if(savedBg) bg = savedBg;
+  const savedLang = localStorage.getItem(LS_LANG);
+  if(savedLang) lang = savedLang;
+  const savedScene = localStorage.getItem(LS_SCENE);
+  if(savedScene) sceneId = savedScene;
+
+  document.body.dataset.bg = bg;
+  renderAll();
+})();
+</script>
+</body>
+</html>

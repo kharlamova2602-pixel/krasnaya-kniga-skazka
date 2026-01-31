@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Черепаший уголок — Хранители Красной книги</title>
+
+<style>
+:root{
+  --bg1:#dff7ee; --bg2:#e9f6ff;
+  --card:#ffffffcc; --stroke:rgba(0,0,0,.08);
+  --shadow:0 18px 45px rgba(0,0,0,.12);
+  --text:#0f3554; --muted:#4b6c85;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 20% 20%, var(--bg2), transparent 60%),
+    radial-gradient(1000px 700px at 80% 10%, var(--bg1), transparent 60%),
+    linear-gradient(180deg,#f3fff9,#e9fbff);
+  min-height:100vh;
+}
+body[data-bg="lake"]{--bg1:#d7f3ff;--bg2:#e7fbff}
+body[data-bg="steppe"]{--bg1:#fff2d7;--bg2:#eafff2}
+body[data-bg="night"]{
+  --text:#eaf7ff;--muted:#c6d8e7;
+  --card:rgba(10,20,35,.70);--stroke:rgba(255,255,255,.12);
+  background:
+    radial-gradient(1200px 700px at 20% 20%, rgba(60,130,255,.22), transparent 60%),
+    radial-gradient(900px 700px at 80% 10%, rgba(20,240,190,.15), transparent 60%),
+    linear-gradient(180deg,#06111f,#050d18);
+}
+
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 60px}
+
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:18px;
+  background:var(--card);border:1px solid var(--stroke);
+  box-shadow:var(--shadow);backdrop-filter:blur(10px);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.emblem{
+  width:88px;height:88px;object-fit:contain;
+  background:rgba(255,255,255,.6);
+  border-radius:20px;padding:8px;
+}
+.brand h1{margin:0;font-size:18px}
+.brand small{color:var(--muted)}
+
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.pill{
+  display:flex;gap:6px;
+  background:rgba(255,255,255,.6);
+  border-radius:999px;padding:6px;
+}
+.btn{
+  border:1px solid var(--stroke);
+  background:#fff;border-radius:999px;
+  padding:8px 14px;
+  font-weight:700;cursor:pointer;
+}
+body[data-bg="night"] .btn{background:rgba(255,255,255,.12);color:var(--text)}
+.btn.active{background:linear-gradient(90deg,#36c2ff,#2d7cf7);color:#fff;border:none}
+
+.hero{
+  margin-top:22px;
+  background:var(--card);
+  border-radius:26px;
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  padding:34px 26px;
+  text-align:center;
+}
+.hero h2{margin:0;font-size:34px}
+.hero p{max-width:780px;margin:14px auto;color:var(--muted);font-size:17px}
+
+.fairy{
+  margin:22px auto 12px;
+  max-width:260px;
+}
+.fairy img{width:100%;filter:drop-shadow(0 12px 24px rgba(0,0,0,.25))}
+
+.actions{
+  margin-top:18px;
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+}
+.btn.big{padding:14px 20px;font-size:16px}
+.btn.primary{background:linear-gradient(90deg,#36c2ff,#2d7cf7);color:white;border:none}
+.btn.teal{background:linear-gradient(90deg,#2ee7c8,#14b8a6);color:#053b3b;border:none}
+
+.audioRow{margin-top:16px;display:flex;gap:10px;justify-content:center}
+
+.footer{
+  margin-top:26px;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  padding:10px;
+}
+</style>
+</head>
+
+<body data-bg="meadow">
+<div class="wrap">
+
+<div class="topbar">
+  <div class="brand">
+    <img src="assets/emblem.png" class="emblem" alt="Эмблема">
+    <div>
+      <h1 id="brandTitle"></h1>
+      <small id="brandSub"></small>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="pill">
+      <button class="btn" data-lang="ru">RU</button>
+      <button class="btn" data-lang="kz">KZ</button>
+      <button class="btn" data-lang="en">EN</button>
+    </div>
+    <div class="pill">
+      <button class="btn" data-bg="meadow">Луг</button>
+      <button class="btn" data-bg="lake">Озеро</button>
+      <button class="btn" data-bg="steppe">Степь</button>
+      <button class="btn" data-bg="night">Ночь</button>
+    </div>
+  </div>
+</div>
+
+<section class="hero">
+  <h2 id="title"></h2>
+
+  <div class="fairy">
+    <img src="assets/fairy.png" alt="Фея">
+  </div>
+
+  <p id="intro"></p>
+
+  <div class="audioRow">
+    <button class="btn" id="speak">🔊 Озвучить</button>
+    <button class="btn" id="stop">⏹ Стоп</button>
+  </div>
+
+  <div class="actions">
+    <a href="animals.html" class="btn big primary">🐢 Живые герои</a>
+    <a href="story.html" class="btn big">📖 Сказка</a>
+    <a href="tasks.html" class="btn big teal">🎯 Задания хранителей</a>
+  </div>
+</section>
+
+<div class="footer">
+© Эко-проект «Черепаший уголок: хранители Красной книги»  
+<br>
+КГУ «Общеобразовательная школа № 1» отдела образования города Балхаш управления образования Карагандинской области, учащиеся 7 «Б» класса
+</div>
+
+</div>
+
+<script>
+const LS_LANG="eco_lang",LS_BG="eco_bg";
+let lang=localStorage.getItem(LS_LANG)||"ru";
+let bg=localStorage.getItem(LS_BG)||"meadow";
+
+const T={
+ru:{
+  brandTitle:"Черепаший уголок",
+  brandSub:"Хранители Красной книги",
+  title:"Черепаший уголок: хранители Красной книги",
+  intro:"Здравствуй, Хранитель. Я — Фея Черепашьего уголка. Эта история — живая сказка о редких животных и растениях Казахстана. Черепаха — её сердце."
+},
+kz:{
+  brandTitle:"Тасбақа бұрышы",
+  brandSub:"Қызыл кітап сақшылары",
+  title:"Тасбақа бұрышы: Қызыл кітап сақшылары",
+  intro:"Сәлем, Сақшы. Мен — Тасбақа бұрышының Перісімін. Бұл — Қазақстанның сирек жануарлары мен өсімдіктері туралы тірі ертегі."
+},
+en:{
+  brandTitle:"Turtle Corner",
+  brandSub:"Red Book Guardians",
+  title:"Turtle Corner: Guardians of the Red Book",
+  intro:"Hello, Guardian. I am the Fairy of the Turtle Corner. This is a living eco-fairy tale about rare animals and plants of Kazakhstan."
+}
+};
+
+function apply(){
+  document.body.dataset.bg=bg;
+  document.getElementById("brandTitle").textContent=T[lang].brandTitle;
+  document.getElementById("brandSub").textContent=T[lang].brandSub;
+  document.getElementById("title").textContent=T[lang].title;
+  document.getElementById("intro").textContent=T[lang].intro;
+  document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));
+  document.querySelectorAll("[data-bg]").forEach(b=>b.classList.toggle("active",b.dataset.bg===bg));
+}
+apply();
+
+document.querySelectorAll("[data-lang]").forEach(b=>{
+  b.onclick=()=>{lang=b.dataset.lang;localStorage.setItem(LS_LANG,lang);apply();}
+});
+document.querySelectorAll("[data-bg]").forEach(b=>{
+  b.onclick=()=>{bg=b.dataset.bg;localStorage.setItem(LS_BG,bg);apply();}
+});
+
+function speak(){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(T[lang].intro);
+  u.lang=lang==="ru"?"ru-RU":lang==="kz"?"kk-KZ":"en-US";
+  speechSynthesis.speak(u);
+}
+document.getElementById("speak").onclick=speak;
+document.getElementById("stop").onclick=()=>speechSynthesis.cancel();
+</script>
+</body>
+</html>
